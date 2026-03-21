@@ -2,10 +2,11 @@
 .login-wrapper {
   width: 100%;
   height: 100vh;
-  background: linear-gradient(135deg,#c0c1dc,#dfe7fd);
+  background: linear-gradient(135deg, #c0c1dc, #dfe7fd);
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: "Raleway", sans-serif;
 }
 
 /* MAIN BOX */
@@ -13,16 +14,47 @@
   width: 80%;
   height: 90vh;
   background: white;
-  border-radius: 20px;
+  border-radius: 25px;
   display: flex;
   overflow: hidden;
-  box-shadow: 0px 10px 40px rgba(0,0,0,0.2);
-  animation: fadeSlide 0.8s ease-out;
-  transition: transform 0.3s ease;
+  box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.15);
+  /*animation: fadeSlide 0.8s ease-out;  
+  transition: transform 0.3s ease;*/
 }
 
-.login-container:hover{
+
+/*.login-container:hover{
   transform: scale(1.01);
+}*/
+
+/*====================SIDEBAR============*/
+
+.sidebar-text {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.sidebar-main {
+  font-size: 40px;
+  font-weight: 800;
+  color: #16a34a;
+  line-height: 1;
+}
+
+.sidebar-sub {
+  font-size: 20px;
+  color: #6b7280;
+  line-height: 1;
+}
+
+/* ICON */
+.sidebar-icon1 {
+  width: 40px;   /* or 50px if you want bigger */
+  height: 40px;
+  object-fit: contain;
+  margin-right: 8px;
 }
 
 /* LEFT SECTION */
@@ -31,45 +63,88 @@
   background: linear-gradient(135deg,#eaf8f8,#d7f3f0);
   padding: 60px;
   position: relative;
-  height:100%;
+  /*height:100%;*/
 }
 
 .left-section h1 {
   font-size: 55px;
   font-weight: bold;
-  margin-bottom: 15px;
-  animation: fadeSlide 1s ease;
+  /*margin-bottom: 15px;
+  animation: fadeSlide 1s ease;*/
 }
 
-.left-section h1 span {
+.left-section span {  /* h1 span*/
   color: #29c07b;
 }
 
+/*
 .left-section p {
   font-size: 18px;
   color: #666;
-}
+}*/
 
 /* FLOATING DOCTOR IMAGE */
 .doctor-img {
   width: 350px;
   position: absolute;
   bottom: 80px;
-  animation: float 3s ease-in-out infinite;
+  /*animation: float 3s ease-in-out infinite;*/
 }
 
-/*Right side*/
+/*Right side, added after doctor login was modified*/
+.right-section {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
 /* TITLE */
 .brand-title{
-  text-align:center;
-  margin-top:80px;
-  font-size:28px;
-  letter-spacing:1px;
-  animation: fadeSlide 1s ease;
+  /*text-align:center;
+  margin-top:80px; */
+  font-size:22px;
+  color: #4b6b5a;
+  letter-spacing:2px;
+  /*animation: fadeSlide 1s ease; */
+  margin-bottom: 9px; /* added */
+  position: relative; /* added*/
+}
+/* added */
+.brand-title::before,
+.brand-title::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 60px;
+  height: 1px;
+  background: #cbd5d1;
 }
 
-/* BUTTON ROW */
+.brand-title::before {
+  left: -80px;
+}
+
+.brand-title::after {
+  right: -80px;
+}
+
+/* CONTAINER */
+.role-container {
+  background: #eef4f1;
+  padding: 100px 80px;
+  border-radius: 25px;
+  box-shadow: 
+    10px 10px 25px rgba(0,0,0,0.08),
+    -10px -10px 25px rgba(255,255,255,0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+/* till here */
+
+/* BUTTON ROW 
 .button-row {
   display: flex;
   flex-direction: column;
@@ -78,7 +153,7 @@
   margin: 100px;
 }
 
-/* BUTTON STYLE */
+/* BUTTON STYLE removed
 .role-btn {
   padding: 14px 100px;
   background: linear-gradient(135deg,#29c07b,#22a96d);
@@ -89,16 +164,62 @@
   font-weight: 500;
   transition: all 0.3s ease;
   box-shadow: 0 8px 20px rgba(41,192,123,0.3);
-}
+} */
 
-/* BUTTON HOVER EFFECT */
+/* BUTTON HOVER EFFECT removed
 .role-btn:hover {
   background: linear-gradient(135deg,#2d1574,#4a2bc2);
   transform: scale(1.07);
   box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+} */
+
+/* BUTTON added*/
+.role-btn {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 80px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 500;
+  color: white;
+
+  background: linear-gradient(135deg, #6ccf8a, #2f8f5b);
+
+  box-shadow: 
+    0 8px 20px rgba(0,0,0,0.15),
+    inset 0 2px 5px rgba(255,255,255,0.3);
+
+  transition: all 0.3s ease;
 }
 
-/* PAGE LOAD ANIMATION */
+/* ICON */
+.icon {
+  font-size: 22px;
+}
+
+/* HOVER */
+.role-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 
+    0 12px 30px rgba(0,0,0,0.2),
+    inset 0 2px 6px rgba(255,255,255,0.4);
+}
+
+/* ================= ANIMATION ================= */
+
+.sidebar-icon1 {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+/* till here */
+
+
+/* PAGE LOAD ANIMATION 
 @keyframes fadeSlide{
   from{
     opacity:0;
@@ -108,9 +229,9 @@
     opacity:1;
     transform:translateY(0);
   }
-}
+} */
 
-/* FLOATING IMAGE ANIMATION */
+/* FLOATING IMAGE ANIMATION 
 @keyframes float{
   0%{
     transform:translateY(0);
@@ -121,4 +242,4 @@
   100%{
     transform:translateY(0);
   }
-}
+}*/

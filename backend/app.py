@@ -254,8 +254,6 @@ def predict():
         "risk_level": get_risk_level(severity),
         "recommendations": get_recommendations(severity)
     }
-
-    prediction_data["timestamp"] = datetime.now()
     
     # Save to MongoDB
     if mongodb_initialized:

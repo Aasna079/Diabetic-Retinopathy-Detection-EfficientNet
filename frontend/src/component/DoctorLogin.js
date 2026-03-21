@@ -6,9 +6,44 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate(); 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [uniqueId, setUniqueId] = useState("");
 
-  const handleLogin = () => {
-    navigate("/DoctorDashboard"); 
+  const handleLogin = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: uniqueId,
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Login success:", data);
+
+        // Redirect based on role (optional but useful)
+        if (data.user.role === "doctor") {
+          navigate("/DoctorDashboard");
+        } else {
+          navigate("/PatientDashboard");
+        }
+
+      } else {
+        alert(data.error);
+      }
+
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Server error");
+    }
   };
 
   return (
@@ -33,17 +68,24 @@ export default function Login() {
         <div className="right-section">
           <h2 className="brand-title">
             <span>LOGIN</span>
-          </h2>
+          </h2><br />
 
           <label>ID</label>
           <input
             type="text"
             placeholder="Eg:-208965"
             className="input-box"
+            value={uniqueId}
+            onChange={(e) => setUniqueId(e.target.value)}
           />
 
-          <label>Username or E-mail</label>
-          <input type="text" className="input-box" />
+          <label>E-mail</label>
+          <input
+            type="text"
+            className="input-box"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
           <label>Password</label>
           <div className="password-box">
@@ -51,6 +93,8 @@ export default function Login() {
               type={showPassword ? "text" : "password"}
               placeholder="********"
               className="input-box"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
 
             <span

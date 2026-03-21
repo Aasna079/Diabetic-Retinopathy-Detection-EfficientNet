@@ -8,6 +8,8 @@ export default function DoctorDashboard() {
   const [fileName, setFileName] = useState("");
   const [cases, setCases] = useState([]);
   const [doctor, setDoctor] = useState(null);
+  const [aiResult, setAiResult] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [patient, setPatient] = useState({
     name: "",
     id: "",
@@ -22,49 +24,84 @@ export default function DoctorDashboard() {
       setDoctor(JSON.parse(storedUser));
     }
 
-    fetch("http://localhost:5000/api/cases")
+    fetch("http://localhost:5000/api/predictions")
       .then((res) => res.json())
-      .then((data) => setCases(Array.isArray(data) ? data : []))
-      .catch(() => setCases([]));
+      .then((data) => {
+        setCases(data || []);
+      })
+      .catch((err) => {
+        console.error("Error fetching predictions:", err);
+        setCases([]);
+      });
   }, []);
 
   /* ---------------- FILE UPLOAD ---------------- */
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
+    if (!file) return;
 
-    if (file) {
-      const result = 42; // test value
-      setFileName(file.name);
-      setPercentage(result);
+    setFileName(file.name);
+    setUploading(true);
+    setAiResult(null);
+    
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('patient_id', 'patient_' + Date.now());
+      formData.append('patient_name', patient.name || 'Unknown Patient');
 
-      // Save report so patient can also see it
-      localStorage.setItem(
-        "patientReport",
-        JSON.stringify({
-          percentage: result,
-          patient: {
-            ...patient,
-          },
-        })
-      );
+      console.log('🚀 Uploading to backend API: http://localhost:5000/api/predict');
+
+      const response = await fetch('http://localhost:5000/api/predict', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Backend error response:', errorText);
+        throw new Error(`Backend error: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ AI Analysis Result:', result);
+
+      setAiResult(result);
+      
+      const confidenceValue = result.confidence;
+      setPercentage(confidenceValue * 100);
+      
+      setPatient({
+        name: result.patient?.name || 'Patient ' + (result.patient?.id || 'Unknown'),
+        id: result.patient?.id || 'Unknown',
+        email: result.patient?.email || 'patient@example.com',
+        date: new Date().toLocaleDateString(),
+      });
+
+    } catch (error) {
+      console.error('❌ Upload failed:', error);
+      
+      setPercentage(42);
+      setPatient({
+        name: 'Demo Patient',
+        id: 'DEMO123',
+        email: 'demo@patient.com',
+        date: new Date().toLocaleDateString(),
+      });
+      
+      alert('AI Analysis failed. Make sure backend is running (python app.py)\nError: ' + error.message);
+    } finally {
+      setUploading(false);
     }
   };
 
-  /* ---------------- DR STAGE ---------------- */
-  const getDRStage = (value) => {
-    if (value <= 10) return "No Diabetic Retinopathy";
-    if (value <= 25) return "Mild Diabetic Retinopathy";
-    if (value <= 50) return "Moderate Diabetic Retinopathy";
-    if (value <= 75) return "Severe Diabetic Retinopathy";
-    return "Proliferative Diabetic Retinopathy";
-  };
   // ✅ Logout Function
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     localStorage.removeItem("patientReport");
 
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   /* ---------------- FORM CHANGE ---------------- */
@@ -215,12 +252,21 @@ export default function DoctorDashboard() {
                   <p>
                     <strong>DR Stage:</strong>{" "}
                     <span className="dr-stage">
-                      {getDRStage(percentage)}
+                      {aiResult?.severity || "Stage not available"}
                     </span>
                   </p>
-
+                  {aiResult?.recommendations && (
+                    <div className="recommendations">
+                      <strong>Recommendations:</strong>
+                      <ul>
+                        {aiResult.recommendations.map((rec, index) => (
+                          <li key={index}>{rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                   <p className="medical-note">
-                    Patient diagnosed with <b>{getDRStage(percentage)}</b>.
+                    Patient diagnosed with <b>{aiResult?.severity}</b>.
                   </p>
                 </div>
               )}

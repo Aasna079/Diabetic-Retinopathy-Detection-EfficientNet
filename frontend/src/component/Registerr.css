@@ -51,12 +51,18 @@
 /* RIGHT SECTION */
 .right-section {
   width: 50%;
-  padding: 70px;
+  padding: 40px 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-sizing: border-box;
 }
 
 .brand-title {
-  font-size: 28px;
-  margin-bottom: 40px;
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  margin-top: 50px;
 }
 
 .brand-title span {
@@ -67,6 +73,8 @@ label {
   font-size: 15px;
   margin-top: 20px;
   display: block;
+  text-align: left;           /* ensures text is left-aligned */
+  width: 100%;                /* label spans full width */
 }
 
 /* INPUT */
@@ -81,24 +89,22 @@ label {
 
 /* PASSWORD BOX */
 .password-box {
+  width: 100%;
+  position: relative;
   display: flex;
   align-items: center;
   border: 1px solid #ccc;
   border-radius: 6px;
-  padding-right: 10px;
-  margin: 5px 0 5px 0;
+  margin: 5px 0 15px 0;
+  height: 59px;       /* controls overall height */
+  padding: 12px;
 }
 
 .password-box input {
-  width: 100%;
+  flex: 1;
   padding: 12px;
   border: none;
   outline: none;
-}
-
-.toggle-eye {
-  cursor: pointer;
-  font-size: 20px;
 }
 
 /* ERROR MESSAGE */
@@ -136,6 +142,7 @@ label {
   cursor: pointer;
   color: #666;
   font-size: 18px;
+  transition: 0.2s
 }
 
 .toggle-eye:hover {
