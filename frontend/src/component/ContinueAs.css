@@ -1,0 +1,124 @@
+/* FULL PAGE BACKGROUND */
+.login-wrapper {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg,#c0c1dc,#dfe7fd);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* MAIN BOX */
+.login-container {
+  width: 80%;
+  height: 90vh;
+  background: white;
+  border-radius: 20px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0px 10px 40px rgba(0,0,0,0.2);
+  animation: fadeSlide 0.8s ease-out;
+  transition: transform 0.3s ease;
+}
+
+.login-container:hover{
+  transform: scale(1.01);
+}
+
+/* LEFT SECTION */
+.left-section {
+  width: 50%;
+  background: linear-gradient(135deg,#eaf8f8,#d7f3f0);
+  padding: 60px;
+  position: relative;
+  height:100%;
+}
+
+.left-section h1 {
+  font-size: 55px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  animation: fadeSlide 1s ease;
+}
+
+.left-section h1 span {
+  color: #29c07b;
+}
+
+.left-section p {
+  font-size: 18px;
+  color: #666;
+}
+
+/* FLOATING DOCTOR IMAGE */
+.doctor-img {
+  width: 350px;
+  position: absolute;
+  bottom: 80px;
+  animation: float 3s ease-in-out infinite;
+}
+
+/*Right side*/
+
+/* TITLE */
+.brand-title{
+  text-align:center;
+  margin-top:80px;
+  font-size:28px;
+  letter-spacing:1px;
+  animation: fadeSlide 1s ease;
+}
+
+/* BUTTON ROW */
+.button-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  margin: 100px;
+}
+
+/* BUTTON STYLE */
+.role-btn {
+  padding: 14px 100px;
+  background: linear-gradient(135deg,#29c07b,#22a96d);
+  color: white;
+  border-radius: 40px;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(41,192,123,0.3);
+}
+
+/* BUTTON HOVER EFFECT */
+.role-btn:hover {
+  background: linear-gradient(135deg,#2d1574,#4a2bc2);
+  transform: scale(1.07);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+}
+
+/* PAGE LOAD ANIMATION */
+@keyframes fadeSlide{
+  from{
+    opacity:0;
+    transform:translateY(30px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* FLOATING IMAGE ANIMATION */
+@keyframes float{
+  0%{
+    transform:translateY(0);
+  }
+  50%{
+    transform:translateY(-12px);
+  }
+  100%{
+    transform:translateY(0);
+  }
+}
