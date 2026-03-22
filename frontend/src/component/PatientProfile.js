@@ -1,32 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import "./Profile.css";
 
 const PatientProfile = () => {
   const [patient, setPatient] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-
-    if (storedUser) {
-      setPatient(JSON.parse(storedUser));
-    } else {
-      // Dummy patient data for frontend demo
-      setPatient({
-        name: "Ram Sharma",
-        patientId: "#5233",
-        status: "Active",
-        age: 52,
-        gender: "Male",
-        email: "ramsharma@example.com",
-        phone: "+977 9812345678",
-        bloodGroup: "O+",
-        address: "Kathmandu, Nepal",
-        condition: "Diabetic Retinopathy",
-        doctor: "Dr. Emily Davies",
-        allergies: "None",
-        medication: "Metformin 500mg",
+    fetch("http://localhost:5000/api/me", {
+      credentials: "include",
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error("Failed to fetch profile");
+        return res.json();
+      })
+      .then((data) => {
+        // console.log("PROFILE DATA:", data);
+        setPatient(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching profile:", err);
       });
-    }
   }, []);
 
   if (!patient) {
@@ -36,17 +29,19 @@ const PatientProfile = () => {
   return (
     <div className="patient-page">
       <div className="patient-header">
-        <p className="breadcrumb">Patients List / <span>Patient Details</span></p>
+        <p className="breadcrumb">
+          Patients List / <span>Patient Details</span>
+        </p>
 
         <div className="patient-top">
           <div className="patient-basic">
             <div>
               <h2>{patient.name}</h2>
               <p className="patient-meta">
-                ID: {patient.patientId} • {patient.phone}
+                ID: {patient._id} • {patient.phone}
               </p>
             </div>
-            <span className="status-badge">{patient.status}</span>
+            <span className="status-badge">{patient.status || "Active"}</span>
           </div>
         </div>
       </div>
@@ -55,22 +50,22 @@ const PatientProfile = () => {
         <h3>Personal Information</h3>
         <div className="info-grid">
           <div><span>Patient Name</span><p>{patient.name}</p></div>
-          <div><span>Age</span><p>{patient.age}</p></div>
-          <div><span>Gender</span><p>{patient.gender}</p></div>
+          <div><span>Age</span><p>{patient.age || "N/A"}</p></div>
+          <div><span>Gender</span><p>{patient.gender || "N/A"}</p></div>
           <div><span>Email</span><p>{patient.email}</p></div>
-          <div><span>Phone Number</span><p>{patient.phone}</p></div>
-          <div><span>Blood Group</span><p>{patient.bloodGroup}</p></div>
-          <div><span>Address</span><p>{patient.address}</p></div>
+          <div><span>Phone Number</span><p>{patient.phone || "N/A"}</p></div>
+          <div><span>Blood Group</span><p>{patient.bloodGroup || "N/A"}</p></div>
+          <div><span>Address</span><p>{patient.address || "N/A"}</p></div>
         </div>
       </div>
 
       <div className="patient-section">
         <h3>Medical Information</h3>
         <div className="info-grid">
-          <div><span>Condition</span><p>{patient.condition}</p></div>
-          <div><span>Primary Physician</span><p>{patient.doctor}</p></div>
-          <div><span>Known Allergies</span><p>{patient.allergies}</p></div>
-          <div><span>Current Medication</span><p>{patient.medication}</p></div>
+          <div><span>Condition</span><p>{patient.condition || "N/A"}</p></div>
+          <div><span>Primary Physician</span><p>{patient.doctor || "N/A"}</p></div>
+          <div><span>Known Allergies</span><p>{patient.allergies || "None"}</p></div>
+          <div><span>Current Medication</span><p>{patient.medication || "N/A"}</p></div>
         </div>
       </div>
     </div>

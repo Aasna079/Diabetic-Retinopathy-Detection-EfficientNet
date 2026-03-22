@@ -200,15 +200,27 @@ def init_auth(users_collection, secret_key):
         try:
             decoded = jwt.decode(token, secret_key, algorithms=["HS256"])
 
+            user = users_collection.find_one({
+                "email": decoded["email"]
+            })
+
+            if not user:
+                return jsonify({"error": "User not found"}), 404
+
             return jsonify({
-                "email": decoded["email"],
-                "role": decoded["role"]
+                "name": user.get("name"),
+                "email": user.get("email"),
+                "role": user.get("role"),
+                "id": user.get("short_id"),
+                "phone": user.get("phone"),
+                "gender": user.get("gender"),
+                "age": user.get("age"),
             })
 
         except jwt.ExpiredSignatureError:
             return jsonify({"error": "Token expired"}), 401
 
         except jwt.InvalidTokenError:
-            return jsonify({"error": "Invalid token"}), 401    
+            return jsonify({"error": "Invalid token"}), 401   
 
     return auth_bp

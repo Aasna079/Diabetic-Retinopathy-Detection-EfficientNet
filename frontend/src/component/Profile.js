@@ -13,6 +13,7 @@ const Profile = () => {
         return res.json();
       })
       .then((data) => {
+        // console.log("PROFILE DATA:", data);
         setDoctor(data);
       })
       .catch((err) => {
