@@ -6,12 +6,43 @@ import { Link,useNavigate } from "react-router-dom";
 export default function PatientRegister() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(false);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = () => {
-    // TEMPORARY CHECK (replace with real logic later)
-    setError(false);
-    navigate("/PatientDashboard"); 
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          password: password,
+          role: "patient"
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Patient registered successfully! Check your email for your ID.");
+
+        console.log("Your ID:", data.short_id);
+        
+        navigate("/PatientLogin");
+      } else {
+        alert(data.error);
+      }
+
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
   };
 
   return (
@@ -26,18 +57,28 @@ export default function PatientRegister() {
 
           <div className="right-section">
             <h2 className="brand-title"><span>REGISTER</span></h2><br />
-            {/* <h2 style={{color:"red"}}>REGISTER NOW</h2> */}
 
             <label>Name</label>
-            <input type="text" className="input-box" />
+            <input
+              className="input-box"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
 
             <label>E-mail</label>
-            <input type="email" className="input-box" />
+            <input
+              className="input-box"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
             <label>Password</label>
             <div className="password-box">
-              <input type={showPassword ? "text" : "password"}
-                placeholder="********"/>
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
 
               <span
                 className="toggle-eye"

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./DoctorDashboard.css";
 import Profile from "./Profile";
 
+
 export default function DoctorDashboard() {
   const [activePage, setActivePage] = useState("dashboard");
   const [percentage, setPercentage] = useState(0);
@@ -133,7 +134,7 @@ export default function DoctorDashboard() {
           <img src="/ICON NAME.png" alt="icon" className="sidebar-icon" />
           <div className="sidebar-text">
             <span className="sidebar-main">Diabetic</span>
-            <span className="sidebar-sub">Retinal Neuropathy</span>
+            <span className="sidebar-sub">Retinopathy</span>
           </div>
         </div>
 

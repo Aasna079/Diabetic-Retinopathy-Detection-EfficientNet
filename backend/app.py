@@ -18,6 +18,7 @@ import gridfs
 from bson import ObjectId
 from auth import init_auth
 
+
 print("=" * 60)
 print("DIABETIC RETINOPATHY DETECTION API - PRESENTATION MODE")
 print("=" * 60)
@@ -28,8 +29,7 @@ load_dotenv()
 
 # Get environment variables
 MONGODB_URI = os.getenv(
-    "MONGODB_URI",
-    "mongodb+srv://krishasedhai_db_user:drtension@dr-detection.gb5f9ao.mongodb.net/dr_detection_db?retryWrites=true&w=majority&authSource=admin"
+    "MONGODB_URI"
 )
 DATABASE_NAME = os.getenv("DATABASE_NAME", "dr_detection_db")
 SECRET_KEY = os.getenv("SECRET_KEY", "my-super-secret-key-for-dr-detection-2024")
@@ -40,7 +40,7 @@ print(f"🗄️  Database: {DATABASE_NAME}")
 
 # Create Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
@@ -68,6 +68,10 @@ try:
     fs = gridfs.GridFS(db)
     predictions_collection = db.predictions
     users_collection = db.users
+
+    users_collection.create_index("short_id", unique=True) #if there is a duplicate email already, it will throw an error so manually delete those mails or use another logic for data collection
+    users_collection.create_index("email", unique=True) #same as above.
+
     mongodb_initialized = True
 
     # Show stats
@@ -80,7 +84,7 @@ except Exception as e:
     mongodb_initialized = False
 
 if mongodb_initialized:
-    auth_bp = init_auth(users_collection)
+    auth_bp = init_auth(users_collection, SECRET_KEY)
     app.register_blueprint(auth_bp)
 
 # Check PyTorch

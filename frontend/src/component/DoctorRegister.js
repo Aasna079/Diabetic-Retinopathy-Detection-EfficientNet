@@ -19,6 +19,7 @@ export default function Register() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           name: name,
           email: email,
@@ -33,9 +34,9 @@ export default function Register() {
       if (response.ok) {
         alert("Registered successfully! Check your email for your ID.");
 
-        console.log("Your ID:", data.unique_id);
+        console.log("Your ID:", data.short_id);
+        navigate("/Login");
 
-        navigate("/"); // go to login
       } else {
         alert(data.error);
       }

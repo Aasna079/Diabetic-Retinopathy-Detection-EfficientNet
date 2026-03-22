@@ -10,7 +10,41 @@ export default function PatientLogin() {
   const [password, setPassword] = useState("");
   const [uniqueId, setUniqueId] = useState("");
 
-  const handleLogin = () => {; 
+  const handleLogin = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          id: uniqueId,
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Login success:", data);
+
+        if (!data.user || !data.user.role) {
+          alert("Invalid server response");
+          return;
+        }
+
+        navigate("/PatientDashboard");
+
+      } else {
+        alert(data.error);
+      }
+
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
   };
 
   return (

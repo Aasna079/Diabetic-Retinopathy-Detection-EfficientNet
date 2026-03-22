@@ -9,6 +9,7 @@ import Profile from "./component/Profile";
 import PatientDashboard from "./component/Patientdashboard";
 import PatientLogin from "./component/PatientLogin";
 import PatientRegister from "./component/PatientRegister";
+import ProtectedRoute from "./component/ProtectedRoute";
 
 function App() {
   return (
@@ -18,15 +19,27 @@ function App() {
           <Route path="/" element={<Continue/>} />
           <Route path="/Login" element={<Login/>} />
           <Route path="/Register" element={<Register />} /> 
-          <Route path="/DoctorDashboard" element={<DoctorDashboard/>} />
           <Route path="/Profile" element={<Profile/>} />   
-          <Route path="/PatientDashboard" element={<PatientDashboard />} />
           <Route path="/PatientLogin" element={<PatientLogin />} />
           <Route path="/PatientRegister" element={<PatientRegister />} />
+          <Route path="/DoctorDashboard"
+              element={
+                <ProtectedRoute allowedRole="doctor">
+                  <DoctorDashboard />  /* Doctor route */
+                </ProtectedRoute>
+              }
+          /> 
+          <Route path="/PatientDashboard"
+              element={
+                <ProtectedRoute allowedRole="patient">
+                  <PatientDashboard />   /* Patient route */
+                </ProtectedRoute>
+              }
+          />
         </Routes>
       </BrowserRouter>
     </>
-     );
+  );
 }
 
 export default App;

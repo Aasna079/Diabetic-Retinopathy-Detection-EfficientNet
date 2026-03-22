@@ -98,7 +98,7 @@ export default function PatientDashboard() {
     <img src="/ICON NAME.png" alt="icon" className="sidebar-icon" />
     <div className="sidebar-text">
       <span className="sidebar-main">Diabetic</span>
-      <span className="sidebar-sub">Retinal Neuropathy</span>
+      <span className="sidebar-sub">Retinopathy</span>
     </div>
   </div>
 

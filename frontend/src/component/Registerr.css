@@ -192,7 +192,7 @@
 }
 
 /* BUTTON HOVER */
-.login-page .login-btn:hover {
+.register-page .login-btn:hover {
   transform: scale(1.04);
   box-shadow: 0 8px 25px rgba(41,192,123,0.5);
 }

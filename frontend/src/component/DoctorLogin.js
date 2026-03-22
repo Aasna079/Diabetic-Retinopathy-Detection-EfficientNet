@@ -17,6 +17,7 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           id: uniqueId,
           email: email,
@@ -29,12 +30,12 @@ export default function Login() {
       if (response.ok) {
         console.log("Login success:", data);
 
-        // Redirect based on role (optional but useful)
-        if (data.user.role === "doctor") {
-          navigate("/DoctorDashboard");
-        } else {
-          navigate("/PatientDashboard");
+        if (!data.user || !data.user.role) {
+          alert("Invalid server response");
+          return;
         }
+
+        navigate("/DoctorDashboard");
 
       } else {
         alert(data.error);
