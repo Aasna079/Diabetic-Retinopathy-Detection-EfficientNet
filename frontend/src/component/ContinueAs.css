@@ -1,5 +1,5 @@
 /* FULL PAGE BACKGROUND */
-.login-wrapper {
+.continue-page .login-wrapper {
   width: 100%;
   height: 100vh;
   background: linear-gradient(135deg, #c0c1dc, #dfe7fd);
@@ -10,7 +10,7 @@
 }
 
 /* MAIN BOX */
-.login-container {
+.continue-page .login-container {
   width: 80%;
   height: 90vh;
   background: white;
@@ -29,28 +29,28 @@
 
 /*====================SIDEBAR============*/
 
-.sidebar-text {
+.continue-page .sidebar-text {
   display: flex;
   align-items: baseline;
   gap: 4px;
   margin-top: 10px;
 }
 
-.sidebar-main {
+.continue-page .sidebar-main {
   font-size: 40px;
   font-weight: 800;
   color: #16a34a;
   line-height: 1;
 }
 
-.sidebar-sub {
+.continue-page .sidebar-sub {
   font-size: 20px;
   color: #6b7280;
   line-height: 1;
 }
 
 /* ICON */
-.sidebar-icon1 {
+.continue-page .sidebar-icon1 {
   width: 40px;   /* or 50px if you want bigger */
   height: 40px;
   object-fit: contain;
@@ -58,7 +58,7 @@
 }
 
 /* LEFT SECTION */
-.left-section {
+.continue-page .left-section {
   width: 50%;
   background: linear-gradient(135deg,#eaf8f8,#d7f3f0);
   padding: 60px;
@@ -66,14 +66,14 @@
   /*height:100%;*/
 }
 
-.left-section h1 {
+.continue-page .left-section h1 {
   font-size: 55px;
   font-weight: bold;
   /*margin-bottom: 15px;
   animation: fadeSlide 1s ease;*/
 }
 
-.left-section span {  /* h1 span*/
+.continue-page .left-section span {  /* h1 span*/
   color: #29c07b;
 }
 
@@ -84,15 +84,15 @@
 }*/
 
 /* FLOATING DOCTOR IMAGE */
-.doctor-img {
+.continue-page .doctor-img {
   width: 350px;
   position: absolute;
   bottom: 80px;
-  /*animation: float 3s ease-in-out infinite;*/
+  animation: float 3s ease-in-out infinite;
 }
 
 /*Right side, added after doctor login was modified*/
-.right-section {
+.continue-page .right-section {
   width: 50%;
   display: flex;
   flex-direction: column;
@@ -101,7 +101,7 @@
 }
 
 /* TITLE */
-.brand-title{
+.continue-page .brand-title{
   /*text-align:center;
   margin-top:80px; */
   font-size:22px;
@@ -112,8 +112,8 @@
   position: relative; /* added*/
 }
 /* added */
-.brand-title::before,
-.brand-title::after {
+.continue-page .brand-title::before,
+.continue-page .brand-title::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -122,16 +122,16 @@
   background: #cbd5d1;
 }
 
-.brand-title::before {
+.continue-page .brand-title::before {
   left: -80px;
 }
 
-.brand-title::after {
+.continue-page .brand-title::after {
   right: -80px;
 }
 
 /* CONTAINER */
-.role-container {
+.continue-page .role-container {
   background: #eef4f1;
   padding: 100px 80px;
   border-radius: 25px;
@@ -174,7 +174,7 @@
 } */
 
 /* BUTTON added*/
-.role-btn {
+.continue-page .role-btn {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -195,12 +195,12 @@
 }
 
 /* ICON */
-.icon {
+.continue-page .icon {
   font-size: 22px;
 }
 
 /* HOVER */
-.role-btn:hover {
+.continue-page .role-btn:hover {
   transform: translateY(-3px) scale(1.03);
   box-shadow: 
     0 12px 30px rgba(0,0,0,0.2),
@@ -209,7 +209,7 @@
 
 /* ================= ANIMATION ================= */
 
-.sidebar-icon1 {
+.continue-page .sidebar-icon1 {
   width: 50px;
   height: 50px;
   object-fit: contain;
@@ -242,4 +242,4 @@
   100%{
     transform:translateY(0);
   }
-}*/
+} */

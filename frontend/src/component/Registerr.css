@@ -1,140 +1,168 @@
 /* FULL PAGE BACKGROUND */
-.login-wrapper {
+.register-page .login-wrapper {
   width: 100%;
   height: 100vh;
-  background: #c0c1dc;
+  background: linear-gradient(135deg,#c0c1dc,#dfe7fd);
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* MAIN BOX */
-.login-container {
+.register-page .login-container {
   width: 80%;
   background: white;
   border-radius: 20px;
   display: flex;
   overflow: hidden;
-  box-shadow: 0px 10px 40px rgba(0,0,0,0.2);
-  min-height: 95vh;     /* instead of height */
+  box-shadow: 0px 15px 40px rgba(0,0,0,0.2);
+  min-height: 80vh;     /* instead of height */
+  animation: fadeIn 0.8s ease;
 }
 
 
 /* LEFT SECTION */
-.left-section {
+.register-page .left-section {
   width: 50%;
-  background: #eaf8f8;
-  padding: 60px;
+  background: linear-gradient(135deg,#eaf8f8,#d7f3f0);
+  padding: 60px; /*controls padding of image and title*/
   position: relative;
-  height: 100%;        /* FIXED: remove vh, avoid overlap */
-}
-
-.left-section h1 {
-  font-size: 55px;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-.left-section h1 span {
-  color: #29c07b;
-}
-
-.left-section p {
-  font-size: 18px;
-  color: #666;
-}
-.doctor-imgg {
-  width: 350px;
-  margin-top: 50px;
-}
-
-/* RIGHT SECTION */
-.right-section {
-  width: 50%;
-  padding: 40px 70px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  box-sizing: border-box;
+  /* height: 100%; */
 }
 
-.brand-title {
-  font-size: 26px;
-  font-weight: 600;
-  margin-bottom: 25px;
-  margin-top: 50px;
+.register-page .left-section h1 {
+  font-size: 55px;
+  font-weight: bold;
+  margin-bottom: 12px;  /*heading up and down spacing*/
+  /* margin-top: 3px; */
 }
 
-.brand-title span {
+.register-page .left-section h1 span {
   color: #29c07b;
 }
 
-label {
+.register-page .left-section p {
+  font-size: 18px;
+  color: #666;
+}
+.register-page.doctor .doctor-imgg {
+  /* width: 350px;
+  margin-top: 50px; */
+  width: 380px;
+  position: absolute;
+  bottom: 46px;
+  animation: float 3s ease-in-out infinite;
+}
+.register-page.patient .doctor-imgg {
+  /* width: 350px;
+  margin-top: 50px; */
+  width: 356px;
+  position: absolute;
+  bottom: 40px;
+  animation: float 3s ease-in-out infinite;
+}
+
+/* RIGHT SECTION */
+.register-page.doctor .right-section {
+  width: 50%;
+  padding: 20px 80px;   /* controls padding of form */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.register-page.patient .right-section {
+  width: 50%;
+  padding: 63px 80px;   /* controls padding of form */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.register-page.doctor .brand-title {
+  font-size: 30px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.register-page.patient .brand-title {
+  font-size: 30px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.register-page .brand-title span {
+  color: #29c07b;
+}
+
+.register-page.doctor label {
   font-size: 15px;
   margin-top: 20px;
   display: block;
   text-align: left;           /* ensures text is left-aligned */
   width: 100%;                /* label spans full width */
 }
+.register-page.patient label {
+  font-size: 15px;
+  margin-top: 15px;
+  display: block;
+  color: #333;
+}
 
 /* INPUT */
-.input-box {
+.register-page .input-box {
   width: 100%;
-  padding: 12px;
-  margin: 5px 0 15px 0;
-  border: 1px solid #ccc;   /* FIXED: semicolon added */
+  padding: 12px;   /*size of the input box*/
+  margin: 0;
+  border: 1px solid #ccc;
   border-radius: 6px;
+  transition: all 0.25s ease;
+}
+
+/* INPUT FOCUS EFFECT */
+.register-page .input-box:focus {
+  border-color: #29c07b;
+  box-shadow: 0 0 6px rgba(41,192,123,0.4);
   outline: none;
 }
 
 /* PASSWORD BOX */
-.password-box {
-  width: 100%;
+.register-page .password-box {
   position: relative;
   display: flex;
   align-items: center;
   border: 1px solid #ccc;
   border-radius: 6px;
-  margin: 5px 0 15px 0;
-  height: 59px;       /* controls overall height */
-  padding: 12px;
+  height: 50px;
+  overflow: hidden;
 }
 
-.password-box input {
-  flex: 1;
-  padding: 12px;
+.register-page .password-box input {
+  width: 100%;
+  height: 100%;
   border: none;
   outline: none;
+  padding: 0 12px;   /* only horizontal padding */
+  box-sizing: border-box;
+}
+
+.register-page .password-box:focus-within {
+  border-color: #29c07b;
+  box-shadow: 0 0 6px rgba(41,192,123,0.4);
 }
 
 /* ERROR MESSAGE */
-.error-msg {
+.register-page .error-msg {
   color: red;
   font-size: 13px;
   margin-top: 4px;
   margin-bottom: 10px;
 }
 
-/* BUTTON */
-.login-btn {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(to right, #29c07b, #2ecc71); /* FIXED gradient */
-  border: none;
-  border-radius: 25px;
-  font-size: 18px;
-  color: white;
-  margin-top: 20px;
-  cursor: pointer;
-  position: relative; 
-  z-index: 10; /* fixes overlap */
-}
-
-.password-box {
-  position: relative;
-}
-
-.toggle-eye {
+.register-page .toggle-eye {
   position: absolute;
   right: 14px;
   top: 50%;
@@ -142,9 +170,74 @@ label {
   cursor: pointer;
   color: #666;
   font-size: 18px;
-  transition: 0.2s
+  transition: 0.2s;
 }
 
-.toggle-eye:hover {
+.register-page .toggle-eye:hover {
   color: #000;
+}
+
+/* BUTTON */
+.register-page .login-btn {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg,#29c07b,#22a96d);
+  border: none;
+  border-radius: 30px;
+  font-size: 18px;
+  color: white;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* BUTTON HOVER */
+.login-page .login-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 8px 25px rgba(41,192,123,0.5);
+}
+
+/* LINKS */
+.register-page .links {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.register-page .links a {
+  color: #0da68b;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.register-page .links a:hover {
+  text-decoration: underline;
+}
+
+.register-page .links p {
+  margin-top: 10px;
+}
+
+/* FLOATING IMAGE ANIMATION */
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* PAGE LOAD ANIMATION */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

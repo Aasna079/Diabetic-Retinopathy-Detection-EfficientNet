@@ -3,51 +3,18 @@ import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
-export default function Login() {
+export default function PatientLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate(); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [uniqueId, setUniqueId] = useState("");
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: uniqueId,
-          email: email,
-          password: password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log("Login success:", data);
-
-        // Redirect based on role (optional but useful)
-        if (data.user.role === "doctor") {
-          navigate("/DoctorDashboard");
-        } else {
-          navigate("/PatientDashboard");
-        }
-
-      } else {
-        alert(data.error);
-      }
-
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Server error");
-    }
+  const handleLogin = () => {; 
   };
 
   return (
-    <div className="login-page doctor">
+    <div className="login-page patient">
       <div className="login-wrapper">
         <div className="login-container">
 
@@ -71,7 +38,7 @@ export default function Login() {
               <span>LOGIN</span>
             </h2><br />
 
-            <label>ID</label>
+             <label>ID</label>
             <input
               type="text"
               placeholder="Eg:-208965"
@@ -114,7 +81,7 @@ export default function Login() {
             <div className="links">
               <p>
                 Do Not Have Account?{" "}
-                <Link to="/Register">Sign Up</Link>
+                <Link to="/PatientRegister">Sign Up</Link>
               </p>
             </div>
           </div>
