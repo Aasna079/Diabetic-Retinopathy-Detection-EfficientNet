@@ -13,7 +13,6 @@ export default function DoctorDashboard() {
   const [uploading, setUploading] = useState(false);
   const [patient, setPatient] = useState({
     name: "",
-    id: "",
     email: "",
     date: "",
   });
@@ -47,9 +46,11 @@ export default function DoctorDashboard() {
     
     try {
       const formData = new FormData();
+      formData.append('patient_name', 'Demo Patient');
+      formData.append('patient_email', 'demo@patient.com');
       formData.append('image', file);
-      formData.append('patient_id', 'patient_' + Date.now());
-      formData.append('patient_name', patient.name || 'Unknown Patient');
+      // formData.append('patient_id', 'patient_' + Date.now());
+      // formData.append('patient_name', patient.name || 'Unknown Patient');
 
       console.log('🚀 Uploading to backend API: http://localhost:5000/api/predict');
 
@@ -73,22 +74,25 @@ export default function DoctorDashboard() {
       setPercentage(confidenceValue * 100);
       
       setPatient({
-        name: result.patient?.name || 'Patient ' + (result.patient?.id || 'Unknown'),
-        id: result.patient?.id || 'Unknown',
-        email: result.patient?.email || 'patient@example.com',
-        date: new Date().toLocaleDateString(),
+        name: 'Rena',
+        email: 'rena123@gmail.com',
+        // date: new Date().toLocaleDateString(),
+        date: '2026-03-24'
       });
+        // name: result.patient?.name || 'Patient ' + (result.patient?.id || 'Unknown'),
+        // id: result.patient?.id || 'Unknown',
+        // email: result.patient?.email || 'patient@example.com',
+        // date: new Date().toLocaleDateString(),
 
     } catch (error) {
       console.error('❌ Upload failed:', error);
       
-      setPercentage(42);
-      setPatient({
-        name: 'Demo Patient',
-        id: 'DEMO123',
-        email: 'demo@patient.com',
-        date: new Date().toLocaleDateString(),
-      });
+      // setPatient({
+      //   name: 'Rena',
+      //   email: 'rena123@gmail.com',
+      //   // date: new Date().toLocaleDateString(),
+      //   date: '03-24-2026'
+      // });
       
       alert('AI Analysis failed. Make sure backend is running (python app.py)\nError: ' + error.message);
     } finally {
@@ -219,13 +223,6 @@ export default function DoctorDashboard() {
                       name="name"
                       placeholder="Patient Name"
                       value={patient.name}
-                      onChange={handlePatientChange}
-                    />
-
-                    <input
-                      name="id"
-                      placeholder="Patient ID"
-                      value={patient.id}
                       onChange={handlePatientChange}
                     />
 
