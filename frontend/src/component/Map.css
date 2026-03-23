@@ -1,0 +1,170 @@
+.map-page {
+  font-family: "Raleway", sans-serif;
+  background: #f5f7fb;
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  font-family: "Raleway", sans-serif;
+  background: #f5f7fb;
+}
+
+/* ================= TOP BAR ================= */
+.top-bar {
+  padding: 18px 22px;
+  background: #f8f9fd;
+  border-bottom: 1px solid #e4e7ee;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+}
+
+.filter-group.small {
+  min-width: 160px;
+}
+
+.filter-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5b6170;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.filter-group input {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #d8deea;
+  background: #ffffff;
+  font-size: 15px;
+  font-weight: 500;
+  color: #2f3542;
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.filter-group input:focus {
+  border-color: #29c07b;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
+}
+
+/* ================= MAIN LAYOUT ================= */
+.content {
+  display: flex;
+  height: calc(100vh - 95px);
+}
+
+/* ================= LEFT PANEL ================= */
+.left-panel {
+  width: 340px;
+  padding: 22px;
+  background: #ffffff;
+  border-right: 1px solid #e4e7ee;
+  overflow-y: auto;
+}
+
+.left-panel h3 {
+  margin: 0 0 18px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2f3542;
+}
+
+.card {
+  border: 1px solid #e2e6ef;
+  padding: 16px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  background: #ffffff;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: #cfc7ff;
+  box-shadow: 0 6px 16px rgba(108, 99, 255, 0.08);
+}
+
+.card.active {
+  border: 2px solid #29c07b;
+  background: #faf9ff;
+}
+
+.card h4 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #2f3542;
+  line-height: 1.3;
+}
+
+.card p {
+  margin: 4px 0;
+  font-size: 15px;
+  color: #5b6170;
+}
+
+.card p:last-child {
+  margin-top: 10px;
+  font-weight: 600;
+  color: #29c07b;
+}
+
+/* ================= MAP ================= */
+.map-container {
+  flex: 1;
+  height: 100%;
+  border-radius: 0;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .content {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .left-panel {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e4e7ee;
+  }
+
+  .map-container {
+    height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group,
+  .filter-group.small {
+    min-width: 100%;
+  }
+
+  .top-bar {
+    padding: 16px;
+  }
+
+  .left-panel {
+    padding: 16px;
+  }
+}

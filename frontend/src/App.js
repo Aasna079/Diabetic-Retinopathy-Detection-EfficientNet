@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Continue from "./component/Continue";
 import DoctorDashboard from "./component/DoctorDashboard";
 import Profile from "./component/Profile";
-import PatientDashboard from "./component/Patientdashboard";
+import PatientDashboard from "./component/PatientDashboard";
 import PatientLogin from "./component/PatientLogin";
 import PatientRegister from "./component/PatientRegister";
 import ProtectedRoute from "./component/ProtectedRoute";

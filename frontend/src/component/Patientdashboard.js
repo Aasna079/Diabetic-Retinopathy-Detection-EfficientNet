@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "./PatientDashboard.css";
 import PatientProfile from "./PatientProfile";
+import Map from "./Map";
 
 export default function PatientDashboard() {
   const [patient, setPatient] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [activePage, setActivePage] = useState("dashboard");
+  const [activePage, setActivePage] = useState("profile");
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [reportData, setReportData] = useState(null);
+
 
   useEffect(() => {
     const loadAll = async () => {
@@ -87,7 +89,7 @@ export default function PatientDashboard() {
     localStorage.removeItem("token");
     localStorage.removeItem("patientReport");
 
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   return (
@@ -98,20 +100,22 @@ export default function PatientDashboard() {
     <img src="/ICON NAME.png" alt="icon" className="sidebar-icon" />
     <div className="sidebar-text">
       <span className="sidebar-main">Diabetic</span>
-      <span className="sidebar-sub">Retinopathy</span>
+      <span className="sidebar-sub">Retinal Neuropathy</span>
     </div>
   </div>
 
   {/* Menu */}
   <nav className="menu">
-    <div onClick={() => setActivePage("profile")}>My Profile</div>
-    <div onClick={() => setActivePage("appointments")}>Appointments</div>
-    <div onClick={() => setActivePage("messages")}>Messages</div>
-    <div onClick={() => setActivePage("report")}>Report</div>
-    <div onClick={() => setActivePage("dashboard")}>Total</div>
+    <div onClick={() => setActivePage("profile")}>   <img src="/pro.png" alt="doctor" className="sidebar-icon1" />My Profile</div>
+    <div onClick={() => setActivePage("appointments")}><img src="/search.png" alt="doctor" className="sidebar-icon1" />Appointments</div>
+    <div onClick={() => setActivePage("messages")}><img src="/message.png" alt="doctor" className="sidebar-icon1" />Messages</div>
+    <div onClick={() => setActivePage("report")}><img src="/report.png" alt="doctor" className="sidebar-icon1" />Report</div>
+    <div onClick={() => setActivePage("total")}><img src="/calender.png" alt="doctor" className="sidebar-icon1" />Total</div>
+    <div onClick={() => setActivePage("map")}><img src="/map.png" alt="doctor" className="sidebar-icon1" />Map</div>
+
   </nav>
 
-  {/* 🔴 Logout ALWAYS at bottom */}
+  {/* Logout*/}
   <div className="logout-btn" onClick={handleLogout}>
     <img src="/logout.png" className="sidebar-icon1" /> Logout
   </div>
@@ -119,32 +123,8 @@ export default function PatientDashboard() {
 
       {/* Main */}
       <main className="main">
-        {activePage === "dashboard" && (
-          <>
-            <div className="welcome-box">
-              <h2>Hello {patient?.name || ""}</h2>
-              <p>Your altogether service.</p>
-            </div>
+        {activePage === "profile" && <PatientProfile />}
 
-            <div className="quick-stats">
-              <div
-                className="stat-card clickable"
-                onClick={() => setActivePage("appointments")}
-              >
-                <h3>{appointments.length}</h3>
-                <p>Total Appointments</p>
-              </div>
-
-              <div
-                className="stat-card clickable"
-                onClick={() => setActivePage("messages")}
-              >
-                <h3>{messages.length}</h3>
-                <p>Total Messages</p>
-              </div>
-            </div>
-          </>
-        )}
 
         {activePage === "appointments" && (
           <>
@@ -238,8 +218,36 @@ export default function PatientDashboard() {
             </div>
           </>
         )}
+        
 
-        {activePage === "profile" && <PatientProfile />}
+       {activePage === "total" && (
+          <>
+            <div className="welcome-box">
+              <h2>Hello {patient?.name || ""}</h2>
+              <p>Your altogether service.</p>
+            </div>
+
+            <div className="quick-stats">
+              <div
+                className="stat-card clickable"
+                onClick={() => setActivePage("appointments")}
+              >
+                <h3>{appointments.length}</h3>
+                <p>Total Appointments</p>
+              </div>
+
+              <div
+                className="stat-card clickable"
+                onClick={() => setActivePage("messages")}
+              >
+                <h3>{messages.length}</h3>
+                <p>Total Messages</p>
+              </div>
+            </div>
+
+          </>
+        )} 
+        {activePage === "map" && <Map />}
       </main>
     </div>
   );

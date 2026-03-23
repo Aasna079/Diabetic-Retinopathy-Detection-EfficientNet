@@ -1,7 +1,10 @@
+import sys
+import os
 from flask import Flask, request, jsonify, send_from_directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from flask_cors import CORS
 from datetime import datetime
-import os
+from ml_model.inference import DRInference
 from dotenv import load_dotenv
 import numpy as np
 from PIL import Image
@@ -11,7 +14,10 @@ import torch
 import random
 import torch.nn as nn
 from torchvision import transforms
-from torchvision.models import resnet34, ResNet34_Weights
+from torchvision import models
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+import cv2
 from pymongo import MongoClient
 import certifi
 import gridfs
@@ -24,7 +30,8 @@ print("DIABETIC RETINOPATHY DETECTION API - PRESENTATION MODE")
 print("=" * 60)
 
 # Load environment variables
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 load_dotenv()
 
 # Get environment variables
@@ -57,9 +64,10 @@ try:
     # Connect using the URI from .env with SSL verification
     mongo_client = MongoClient(
         MONGODB_URI,
-        serverSelectionTimeoutMS=10000,
         tls=True,
-        tlsCAFile=certifi.where()
+        tlsCAFile=certifi.where(),
+        serverSelectionTimeoutMS=10000
+        
     )
     mongo_client.admin.command('ping')
     print("✅ MongoDB Atlas connection successful!")
@@ -150,45 +158,22 @@ def get_recommendations(severity):
         "Follow doctor's advice"
     ])
 
-# ===== ML Model Setup =====
-CHECKPOINT_PATH = "checkpoint/resnet34.pth"
-NUM_CLASSES = 5
-IMAGE_SIZE = 224
+CHECKPOINT_PATH = os.path.join(BASE_DIR, "checkpoints", "best_model.pth")
 
 MODEL_LOADED = False
-model = None
-transform = None
+engine = None
 
 try:
     if os.path.exists(CHECKPOINT_PATH):
-        print(f"\n📦 Loading trained model from: {CHECKPOINT_PATH}")
+        print("\n📦 Loading DRInference engine...")
 
-        transform = transforms.Compose([
-            transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        ])
+        engine = DRInference(CHECKPOINT_PATH, use_tta=False)
 
-        model = resnet34(weights=ResNet34_Weights.IMAGENET1K_V1)
-        model.fc = nn.Sequential(
-            nn.Dropout(0.3),
-            nn.Linear(model.fc.in_features, NUM_CLASSES)
-        )
-
-        checkpoint = torch.load(CHECKPOINT_PATH, map_location=device)
-        if 'state_dict' in checkpoint:
-            model.load_state_dict(checkpoint['state_dict'])
-        else:
-            model.load_state_dict(checkpoint)
-
-        model = model.to(device)
-        model.eval()
         MODEL_LOADED = True
         print("✅ ML Model loaded successfully!")
 
     else:
-        print(f"\n⚠️  Model file '{CHECKPOINT_PATH}' not found")
-        print("⚠️  Using demo mode with random predictions")
+        print("⚠️ Model file not found, using demo mode")
 
 except Exception as e:
     print(f"❌ Model loading error: {e}")
@@ -226,6 +211,7 @@ def predict():
         return jsonify({"error": "No image uploaded"}), 400
 
     file = request.files['image']
+    doctor_name = request.form.get("doctor_name")
 
     if file.filename == '':
         return jsonify({"error": "Empty filename"}), 400
@@ -235,29 +221,52 @@ def predict():
 
     image_bytes = file.read()
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-
-    input_tensor = transform(image).unsqueeze(0).to(device)
+    
 
     if MODEL_LOADED:
-        with torch.no_grad():
-            outputs = model(input_tensor)
-            probs = torch.softmax(outputs, dim=1)
-            confidence, predicted_class = torch.max(probs, dim=1)
+        result = engine.predict(image)
 
-        severity = CLASS_NAMES[predicted_class.item()]
-        confidence = round(confidence.item(), 4)
+        prediction_data = {
+            "class_id": result.get("class_id"),
+            "class_name": result.get("class_name"),
+            "confidence": result.get("confidence"),
+
+            "severity": result.get("severity"),  # keep actual severity label
+
+            "doctor_id": doctor_name,
+            "patient_id": 'Rena',
+            "notes": "",
+
+            "filename": file.filename,
+            "stored_file": None,
+
+            "prediction_id": str(uuid.uuid4()),
+
+            "probabilities": result.get("probabilities"),
+            "model_metrics": result.get("model_metrics", {}),
+
+            "recommendation": result.get("recommendation"),
+
+            "high_risk_flag": result.get("high_risk_flag"),
+            "warning": result.get("warning"),
+            "second_opinion": result.get("second_opinion"),
+
+            "tta_used": result.get("tta_used"),
+
+            "timestamp": datetime.now()
+        }
 
     else:
         predicted_class = random.randint(0, 4)
         severity = CLASS_NAMES[predicted_class]
         confidence = round(random.uniform(0.6, 0.95), 4)
 
-    prediction_data = {
-        "severity": severity,
-        "confidence": confidence,
-        "risk_level": get_risk_level(severity),
-        "recommendations": get_recommendations(severity)
-    }
+        prediction_data = {
+            "severity": severity,
+            "confidence": confidence,
+            "risk_level": get_risk_level(severity),
+            "recommendations": get_recommendations(severity)
+        }
     
     # Save to MongoDB
     if mongodb_initialized:
