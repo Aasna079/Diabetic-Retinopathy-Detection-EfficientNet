@@ -8,7 +8,6 @@ export default function PatientLogin() {
   const navigate = useNavigate(); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [uniqueId, setUniqueId] = useState("");
 
   const handleLogin = async () => {
     try {
@@ -19,7 +18,6 @@ export default function PatientLogin() {
         },
         credentials: "include",
         body: JSON.stringify({
-          id: uniqueId,
           email: email,
           password: password,
         }),
@@ -28,25 +26,26 @@ export default function PatientLogin() {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Login success:", data);
-
         if (!data.user || !data.user.role) {
           alert("Invalid server response");
           return;
         }
-
         navigate("/PatientDashboard");
-
       } else {
-        alert(data.error);
+        if (response.status === 404) {
+          alert("User not found. Check your email.");
+        } else if (response.status === 401) {
+          alert("Incorrect password.");
+        } else {
+          alert(data.error);
+        }
       }
-
     } catch (error) {
       console.error(error);
       alert("Server error");
     }
   };
-
+        
   return (
     <div className="login-page patient">
       <div className="login-wrapper">
@@ -71,15 +70,6 @@ export default function PatientLogin() {
             <h2 className="brand-title">
               <span>LOGIN</span>
             </h2><br />
-
-             <label>ID</label>
-            <input
-              type="text"
-              placeholder="Eg:-208965"
-              className="input-box"
-              value={uniqueId}
-              onChange={(e) => setUniqueId(e.target.value)}
-            />
 
             <label>E-mail</label>
             <input

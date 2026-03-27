@@ -1,9 +1,6 @@
 import uuid
-from nanoid import generate
 from flask import Blueprint, request, jsonify
 import bcrypt
-import smtplib
-from email.mime.text import MIMEText
 import os
 from dotenv import load_dotenv
 from flask import make_response
@@ -13,33 +10,9 @@ import jwt
 
 load_dotenv()  # loads variables from .env
 
-sender_email = os.getenv("EMAIL_USER")
-sender_password = os.getenv("EMAIL_PASS")
 
 auth_bp = Blueprint('auth', __name__)
 
-def send_email(to_email, short_id, role):
-    subject = "Your Account ID"
-    body = f"Your {role.capitalize()} ID is: {short_id}"
-
-    msg = MIMEText(body)
-    msg["Subject"] = subject
-    msg["From"] = sender_email
-    msg["To"] = to_email
-
-    try:
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.sendmail(sender_email, to_email, msg.as_string())
-        server.quit()
-    except Exception as e:
-        print("Email failed:", e)
-        raise e   # THIS will show real error in terminal
-
-def generate_short_id(role):
-    prefix = "DR" if role == "doctor" else "PT"
-    return f"{prefix}-{generate(size=6)}"
 
 def init_auth(users_collection, secret_key):
 
@@ -48,9 +21,13 @@ def init_auth(users_collection, secret_key):
         data = request.json
 
         name = data.get("name")
-        email = data.get("email").strip().lower()
+        email = data.get("email")
         password = data.get("password")
         role = data.get("role")
+
+        phone = None
+        if role == "patient":
+            phone = data.get("phone")
 
         nmc_number = None
         if role == "doctor":
@@ -59,8 +36,13 @@ def init_auth(users_collection, secret_key):
         if not name or not email or not password or not role:
             return jsonify({"error": "Missing required fields"}), 400
         
+        email = email.strip().lower()
+        
         if role == "doctor" and not nmc_number:
             return jsonify({"error": "NMC number required for doctors"}), 400
+        
+        if role == "patient" and not phone:
+            return jsonify({"error": "Phone number required for patients"}), 400
 
         existing_user = users_collection.find_one({"email": email})
         if existing_user:
@@ -70,40 +52,31 @@ def init_auth(users_collection, secret_key):
 
         uuid_id = str(uuid.uuid4())
 
-        short_id = generate_short_id(role)
-
-        # ensure short_id is unique
-        while users_collection.find_one({"short_id": short_id}):
-            short_id = generate_short_id(role)
-
         user_data = {
             "name": name,
             "email": email,
             "password": hashed_password.decode('utf-8'),
             "role": role,
             "nmc_number": nmc_number,
+            "phone": phone, 
             "uuid": uuid_id,
-            "short_id": short_id,
             "created_at": datetime.now()
         }
 
-        users_collection.insert_one(user_data)
-
-        # Send email AFTER saving
         try:
-            send_email(email, short_id, role)
+            users_collection.insert_one(user_data)
         except Exception as e:
-            print("Email failed but user created:", e)
+            return jsonify({"error": f"Database error: {str(e)}"}), 500
 
         token = jwt.encode({
             "email": email,
+            "uuid": uuid_id,
             "role": role,
             "exp": datetime.utcnow() + timedelta(days=7)
         }, secret_key, algorithm="HS256")
 
         response = make_response(jsonify({
             "message": "User registered successfully",
-            "short_id": short_id,
             "role": role
         }))
 
@@ -118,43 +91,21 @@ def init_auth(users_collection, secret_key):
 
         return response
 
-    @auth_bp.route('/api/verify', methods=['POST'])
-    def verify():
-        data = request.json
-
-        short_id = data.get("id")
-        email = data.get("email").strip().lower()
-
-        if not email or not short_id:
-            return jsonify({"error": "Missing email or id"}), 400
-
-        user = users_collection.find_one({
-            "email": email,
-            "short_id": short_id
-        })
-
-        if not user:
-            return jsonify({"error": "User not found"}), 404
-
-        return jsonify({
-            "message": "User verified successfully"
-        }), 200
-
 
     @auth_bp.route('/api/login', methods=['POST'])
     def login():
         data = request.json
 
-        short_id = data.get("id")
-        email = data.get("email").strip().lower()
+        email = data.get("email")
         password = data.get("password")
 
-        if not email or not password or not short_id:
-            return jsonify({"error": "Missing email, id or password"}), 400
+        if not email or not password:
+            return jsonify({"error": "Missing email or password"}), 400
+        
+        email = email.strip().lower()
 
         user = users_collection.find_one({
             "email": email,
-            "short_id": short_id
         })
 
         if not user:
@@ -165,6 +116,7 @@ def init_auth(users_collection, secret_key):
 
         token = jwt.encode({
             "email": user["email"],
+            "uuid": user["uuid"],
             "role": user["role"],
             "exp": datetime.utcnow() + timedelta(days=7)
         }, secret_key, algorithm="HS256")
@@ -175,7 +127,6 @@ def init_auth(users_collection, secret_key):
                 "name": user["name"],
                 "email": user["email"],
                 "role": user["role"],
-                "id": user["short_id"]
             }
         }))
 
@@ -201,7 +152,7 @@ def init_auth(users_collection, secret_key):
             decoded = jwt.decode(token, secret_key, algorithms=["HS256"])
 
             user = users_collection.find_one({
-                "email": decoded["email"]
+                "uuid": decoded["uuid"]
             })
 
             if not user:
@@ -211,7 +162,6 @@ def init_auth(users_collection, secret_key):
                 "name": user.get("name"),
                 "email": user.get("email"),
                 "role": user.get("role"),
-                "id": user.get("short_id"),
                 "phone": user.get("phone"),
                 "gender": user.get("gender"),
                 "age": user.get("age"),

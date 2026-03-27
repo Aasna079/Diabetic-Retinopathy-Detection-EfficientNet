@@ -10,6 +10,7 @@ import PatientDashboard from "./component/PatientDashboard";
 import PatientLogin from "./component/PatientLogin";
 import PatientRegister from "./component/PatientRegister";
 import ProtectedRoute from "./component/ProtectedRoute";
+import MapPage from './component/Map';
 
 function App() {
   return (
@@ -17,8 +18,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Continue/>} />
-          <Route path="/Login" element={<Login/>} />
-          <Route path="/Register" element={<Register />} /> 
+          <Route path="/DoctorLogin" element={<Login/>} />
+          <Route path="/DoctorRegister" element={<Register />} /> 
           <Route path="/Profile" element={<Profile/>} />   
           <Route path="/PatientLogin" element={<PatientLogin />} />
           <Route path="/PatientRegister" element={<PatientRegister />} />
@@ -36,10 +37,10 @@ function App() {
                 </ProtectedRoute>
               }
           />
+          <Route path="/Map" element={<MapPage />} />
         </Routes>
       </BrowserRouter>
     </>
   );
 }
-
 export default App;

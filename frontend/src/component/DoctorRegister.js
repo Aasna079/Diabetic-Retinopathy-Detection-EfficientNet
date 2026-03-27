@@ -32,9 +32,8 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Registered successfully! Check your email for your ID.");
+        alert("Registered successfully!");
 
-        console.log("Your ID:", data.short_id);
         navigate("/Login");
 
       } else {
@@ -71,7 +70,7 @@ export default function Register() {
             <label>NMC number</label>
             <input
               className="input-box"
-              placeholder="Eg:- NMC Reg. No: 56789"
+              placeholder="Eg:- NMC Reg. No: 567890"
               value={nmc}
               onChange={(e) => setNmc(e.target.value)}
             />

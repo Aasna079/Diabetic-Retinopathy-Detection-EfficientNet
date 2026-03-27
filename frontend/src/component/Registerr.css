@@ -49,7 +49,7 @@
   font-size: 18px;
   color: #666;
 }
-.register-page.doctor .doctor-imgg {
+.register-page .doctor-imgg {
   /* width: 350px;
   margin-top: 50px; */
   width: 380px;
@@ -57,60 +57,60 @@
   bottom: 46px;
   animation: float 3s ease-in-out infinite;
 }
-.register-page.patient .doctor-imgg {
-  /* width: 350px;
-  margin-top: 50px; */
+/* .register-page.patient .doctor-imgg {
+   width: 350px;
+  margin-top: 50px;
   width: 356px;
   position: absolute;
   bottom: 40px;
   animation: float 3s ease-in-out infinite;
-}
+} */
 
 /* RIGHT SECTION */
-.register-page.doctor .right-section {
+.register-page .right-section {
   width: 50%;
   padding: 20px 80px;   /* controls padding of form */
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.register-page.patient .right-section {
+/* .register-page.patient .right-section {
   width: 50%;
-  padding: 63px 80px;   /* controls padding of form */
+  padding: 63px 80px;   controls padding of form 
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
+} */
 
-.register-page.doctor .brand-title {
+.register-page .brand-title {
   font-size: 30px;
   margin-top: 15px;
   margin-bottom: 20px;
   text-align: center;
 }
-.register-page.patient .brand-title {
+/* .register-page.patient .brand-title {
   font-size: 30px;
   margin-bottom: 30px;
   text-align: center;
-}
+} */
 
 .register-page .brand-title span {
   color: #29c07b;
 }
 
-.register-page.doctor label {
+.register-page label {
   font-size: 15px;
   margin-top: 20px;
   display: block;
   text-align: left;           /* ensures text is left-aligned */
   width: 100%;                /* label spans full width */
 }
-.register-page.patient label {
+/* .register-page.patient label {
   font-size: 15px;
   margin-top: 15px;
   display: block;
   color: #333;
-}
+} */
 
 /* INPUT */
 .register-page .input-box {

@@ -10,6 +10,7 @@ export default function PatientRegister() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
 
   const handleSubmit = async () => {
     try {
@@ -22,6 +23,7 @@ export default function PatientRegister() {
         body: JSON.stringify({
           name: name,
           email: email,
+          phone: phone,
           password: password,
           role: "patient"
         }),
@@ -30,9 +32,7 @@ export default function PatientRegister() {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Patient registered successfully! Check your email for your ID.");
-
-        console.log("Your ID:", data.short_id);
+        alert("Patient registered successfully!");
         
         navigate("/PatientLogin");
       } else {
@@ -70,6 +70,14 @@ export default function PatientRegister() {
               className="input-box"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <label>Phone Number</label>
+            <input
+              type="tel"
+              className="input-box"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
             />
 
             <label>Password</label>
