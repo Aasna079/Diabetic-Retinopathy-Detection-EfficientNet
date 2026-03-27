@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./DoctorDashboard.css";
 import Profile from "./Profile";
+import { useNavigate } from "react-router-dom";
 
 
 export default function DoctorDashboard() {
@@ -11,11 +12,51 @@ export default function DoctorDashboard() {
   const [doctor, setDoctor] = useState(null);
   const [aiResult, setAiResult] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [fileName, setFileName] = useState("");
+  const [showMore, setShowMore] = useState(false);
+  const [showFullReport, setShowFullReport] = useState(false);
   const [patient, setPatient] = useState({
     name: "",
     email: "",
     date: "",
   });
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [showDiagnosis, setShowDiagnosis] = useState(false);
+
+// Example patient data
+  const patients = [
+    { name: "Soham Adhikari", phone: "9841234567" },
+    { name: "Ram Sharma", phone: "9841111111" },
+    { name: "Sita Rai", phone: "9841222222" },
+    { name: "Hari Thapa", phone: "9841333333" },
+    { name: "Gita Karki", phone: "9841444444" },
+    { name: "Priya Karki", phone: "98098744" },
+    { name: "Soni Karki", phone: "980774736" },
+    { name: "Surekha Karki", phone: "99378483232" },
+    { name: "Somiya Karki", phone: "987376275" },
+  ];
+
+  // Filter patients by search term
+  const filteredPatients = patients.filter((p) =>
+    p.phone.includes(searchTerm)
+  );
+
+  const fakeDiagnosis = {
+    condition: "Diabetic Retinopathy",
+    severity: "Moderate",
+    notes:
+      "Signs of microaneurysms and mild retinal hemorrhages detected. Recommend strict blood sugar control and follow-up in 3 months.",
+  };
+
+  const fakeReports = [
+    { date: "2026-03-10", result: "Retinal scan shows early-stage abnormalities." },
+    { date: "2026-02-15", result: "Vision slightly blurred; possible diabetic changes observed." },
+    { date: "2026-01-05", result: "Routine eye checkup. No major issues, baseline recorded." },
+  ];
+
+
 
   /* ---------------- LOAD USER + CASES ---------------- */
   useEffect(() => {
