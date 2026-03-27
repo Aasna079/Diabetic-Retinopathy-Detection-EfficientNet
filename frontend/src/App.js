@@ -18,8 +18,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Continue/>} />
-          <Route path="/DoctorLogin" element={<Login/>} />
-          <Route path="/DoctorRegister" element={<Register />} /> 
+          <Route path="/Login" element={<Login/>} />
+          <Route path="/Register" element={<Register />} /> 
           <Route path="/Profile" element={<Profile/>} />   
           <Route path="/PatientLogin" element={<PatientLogin />} />
           <Route path="/PatientRegister" element={<PatientRegister />} />

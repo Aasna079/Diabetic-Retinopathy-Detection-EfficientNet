@@ -77,8 +77,7 @@ try:
     predictions_collection = db.predictions
     users_collection = db.users
 
-    users_collection.create_index("short_id", unique=True) #if there is a duplicate email already, it will throw an error so manually delete those mails or use another logic for data collection
-    users_collection.create_index("email", unique=True) #same as above.
+    users_collection.create_index("email", unique=True) #if there is a duplicate email already, it will throw an error so manually delete those mails or use another logic for data collection
 
     mongodb_initialized = True
 
@@ -331,6 +330,4 @@ if __name__ == '__main__':
     print(f"⚡ Device: {device.upper()}")
     
     port = int(os.environ.get("PORT", 5000))
-
-    app.run(host="0.0.0.0", port=port)
-
+    app.run(host="0.0.0.0", port=port, debug=True)
