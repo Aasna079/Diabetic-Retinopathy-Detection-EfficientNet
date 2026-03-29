@@ -12,6 +12,9 @@ import PatientRegister from "./component/PatientRegister";
 import ProtectedRoute from "./component/ProtectedRoute";
 import MapPage from './component/Map';
 import SetPassword from "./component/SetPassword";
+import DoctorPatientList from "./component/DoctorPatientList";
+import DoctorLayout from "./component/DoctorLayout";
+import DoctorPatientDetails from "./component/DoctorPatientDetails";
 
 function App() {
   return (
@@ -21,16 +24,48 @@ function App() {
           <Route path="/" element={<Continue/>} />
           <Route path="/Login" element={<Login/>} />
           <Route path="/Register" element={<Register />} /> 
-          <Route path="/Profile" element={<Profile/>} />   
+          <Route
+            path="/patients/:id"
+            element={
+              <ProtectedRoute allowedRole="doctor">
+                <DoctorLayout>
+                  <DoctorPatientDetails /> {/* New component */}
+                </DoctorLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Profile"
+            element={
+              <ProtectedRoute allowedRole="doctor">
+                <DoctorLayout>
+                  <Profile />
+                </DoctorLayout>
+              </ProtectedRoute>
+            }
+          />  
           <Route path="/PatientLogin" element={<PatientLogin />} />
           <Route path="/PatientRegister" element={<PatientRegister />} />
-          <Route path="/DoctorDashboard"
-              element={
-                <ProtectedRoute allowedRole="doctor">
-                  <DoctorDashboard />  /* Doctor route */
-                </ProtectedRoute>
-              }
-          /> 
+          <Route
+            path="/patients"
+            element={
+              <ProtectedRoute allowedRole="doctor">
+                <DoctorLayout>
+                  <DoctorPatientList />
+                </DoctorLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/DoctorDashboard"
+            element={
+              <ProtectedRoute allowedRole="doctor">
+                <DoctorLayout>
+                  <DoctorDashboard />
+                </DoctorLayout>
+              </ProtectedRoute>
+            }
+          />
           <Route path="/PatientDashboard"
               element={
                 <ProtectedRoute allowedRole="patient">
