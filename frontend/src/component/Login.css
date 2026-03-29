@@ -51,7 +51,7 @@
 .login-page .doctor-img-login {
   width: 356px;
   position: absolute;
-  bottom: 40px;
+  bottom: 25px;
   animation: float 3s ease-in-out infinite;
 }
 

@@ -22,7 +22,8 @@ from pymongo import MongoClient
 import certifi
 import gridfs
 from bson import ObjectId
-from auth import init_auth
+from auth import init_auth, auth_bp
+from admin import init_admin, admin_bp
 
 
 print("=" * 60)
@@ -93,6 +94,9 @@ except Exception as e:
 if mongodb_initialized:
     auth_bp = init_auth(users_collection, SECRET_KEY)
     app.register_blueprint(auth_bp)
+
+    admin_bp = init_admin(users_collection)
+    app.register_blueprint(admin_bp)  
 
 # Check PyTorch
 print(f"\n🤖 PyTorch version: {torch.__version__}")
@@ -225,6 +229,9 @@ def predict():
     if MODEL_LOADED:
         result = engine.predict(image)
 
+        patient_id = request.form.get("patient_id")
+        doctor_id = request.form.get("doctor_id")  # if you send uuid from frontend
+
         prediction_data = {
             "class_id": result.get("class_id"),
             "class_name": result.get("class_name"),
@@ -232,8 +239,8 @@ def predict():
 
             "severity": result.get("severity"),  # keep actual severity label
 
-            "doctor_id": doctor_name,
-            "patient_id": 'Rena',
+            "doctor_id": doctor_id,
+            "patient_id": patient_id,
             "notes": "",
 
             "filename": file.filename,
@@ -314,6 +321,55 @@ def get_predictions():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+@app.route('/api/patient_reports', methods=['GET'])
+def get_patient_reports():
+    patient_id = request.args.get("patient_id")
+    reports = list(predictions_collection.find({"patient_id": patient_id}))
+    for r in reports:
+        r["_id"] = str(r["_id"])
+    return jsonify(reports)
+    
+@app.route("/api/patients", methods=["GET"])
+def get_patients():
+    doctor_id = request.args.get("doctor_id")
+    if not mongodb_initialized:
+        return jsonify([])
+    patients = list(users_collection.find({"doctor_id": doctor_id}))
+    for p in patients:
+        p["_id"] = str(p["_id"])
+    return jsonify(patients)
+
+# ========== Chatbot Route ==========
+@app.route("/chat", methods=["POST"])
+def chat():
+    try:
+        data = request.get_json()
+        message = data.get("message", "")
+        reply = chatbot_reply(message)
+        return jsonify({"reply": reply})
+    except Exception as e:
+        print("ERROR:", e)
+        return jsonify({"reply": "Server error occurred."})
+
+# Chatbot logic
+def chatbot_reply(msg):
+    if not msg:
+        return "Please type a message."
+    msg = msg.lower()
+    if "login" in msg:
+        return "Patients can log in using their registered email and password."
+    elif "report" in msg:
+        return "You can view your OCT report in the Reports section."
+    elif "appointment" in msg:
+        return "Appointments are listed in your dashboard."
+    elif "hospital" in msg or "nearby" in msg:
+        return "You can check nearby hospitals using the map section."
+    elif "hello" in msg or "hi" in msg:
+        return "Hello! How can I help you today?"
+    else:
+        return "I can help with login, reports, appointments, and navigation."
+
+
 # ============= START SERVER ============
 if __name__ == '__main__':
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./PatientDashboard.css";
 import PatientProfile from "./PatientProfile";
+import Chatbot from "./Chatbot";
 import Map from "./Map";
 
 export default function PatientDashboard() {
@@ -52,24 +53,24 @@ export default function PatientDashboard() {
   };
 
   const loadAppointments = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/appointments");
-      const data = await res.json();
-      setAppointments(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Appointments fetch error:", err);
-    }
-  };
+  try {
+    const res = await fetch("http://localhost:5000/api/appointments");
+    const data = await res.json();
+    setAppointments(Array.isArray(data) ? data : []);
+  } catch (err) {
+    console.error("Appointments fetch error:", err);
+  }
+};
 
-  const loadMessages = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/messages");
-      const data = await res.json();
-      setMessages(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Messages fetch error:", err);
-    }
-  };
+const loadMessages = async () => {
+  try {
+    const res = await fetch("http://localhost:5000/api/messages");
+    const data = await res.json();
+    setMessages(Array.isArray(data) ? data : []);
+  } catch (err) {
+    console.error("Messages fetch error:", err);
+  }
+};
 
   const filteredMessages = messages.filter((m) =>
     m.content?.toLowerCase().includes(search.toLowerCase())
@@ -107,10 +108,7 @@ export default function PatientDashboard() {
   {/* Menu */}
   <nav className="menu">
     <div onClick={() => setActivePage("profile")}>   <img src="/pro.png" alt="doctor" className="sidebar-icon1" />My Profile</div>
-    <div onClick={() => setActivePage("appointments")}><img src="/search.png" alt="doctor" className="sidebar-icon1" />Appointments</div>
-    <div onClick={() => setActivePage("messages")}><img src="/message.png" alt="doctor" className="sidebar-icon1" />Messages</div>
     <div onClick={() => setActivePage("report")}><img src="/report.png" alt="doctor" className="sidebar-icon1" />Report</div>
-    <div onClick={() => setActivePage("total")}><img src="/calender.png" alt="doctor" className="sidebar-icon1" />Total</div>
     <div onClick={() => setActivePage("map")}><img src="/map.png" alt="doctor" className="sidebar-icon1" />Map</div>
 
   </nav>
@@ -125,70 +123,6 @@ export default function PatientDashboard() {
       <main className="main">
         {activePage === "profile" && <PatientProfile />}
 
-
-        {activePage === "appointments" && (
-          <>
-            <div className="section-title">My Appointments</div>
-            <div className="card">
-              <table>
-                <thead>
-                  <tr>
-                    <th>S.No</th>
-                    <th>Doctor</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {appointments.length === 0 ? (
-                    <tr>
-                      <td colSpan="5">No Appointments</td>
-                    </tr>
-                  ) : (
-                    appointments.map((a, index) => (
-                      <tr key={a._id || index}>
-                        <td>{index + 1}</td>
-                        <td>{a.doctorName || "N/A"}</td>
-                        <td>{a.date || "N/A"}</td>
-                        <td>{a.time || "N/A"}</td>
-                        <td className={`status ${a.status?.toLowerCase()}`}>
-                          {a.status || "Pending"}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-
-        {activePage === "messages" && (
-          <>
-            <div className="section-title">Messages</div>
-            <input
-              type="text"
-              placeholder="Search messages..."
-              className="search-box"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <div className="card">
-              {filteredMessages.length === 0 ? (
-                <p>No messages found</p>
-              ) : (
-                filteredMessages.map((m, index) => (
-                  <div key={m._id || index} className="message-box">
-                    <strong>From: {m.from || "Doctor"}</strong>
-                    <p>{m.content || "No content"}</p>
-                  </div>
-                ))
-              )}
-            </div>
-          </>
-        )}
-
         {activePage === "report" && (
           <>
             <div className="section-title">My Report</div>
@@ -199,10 +133,12 @@ export default function PatientDashboard() {
                 <div className="patient-report">
                   <h3 style={{ color: "#16a34a" }}>Patient Examination Report</h3>
                   <div className="patient-form">
-                    <input value={reportData?.patient?.name || patient?.name || ""} readOnly />
-                    <input value={reportData?.patient?.id || patient?._id || ""} readOnly />
-                    <input value={reportData?.patient?.email || patient?.email || ""} readOnly />
-                    <input value={reportData?.patient?.date || ""} readOnly />
+                    <div className="patient-form">
+                              <input value={reportData?.patient?.name || patient?.name || ""} readOnly />
+                              <input value={reportData?.patient?.phone || patient?.phone || ""} readOnly />
+                              <input value={reportData?.patient?.email || patient?.email || ""} readOnly />
+                              <input value={reportData?.patient?.date || ""} readOnly />
+                              </div>
                   </div>
                   <hr />
                   <p><strong>DR Percentage:</strong> {reportData.percentage}%</p>
@@ -219,35 +155,8 @@ export default function PatientDashboard() {
           </>
         )}
         
-
-       {activePage === "total" && (
-          <>
-            <div className="welcome-box">
-              <h2>Hello {patient?.name || ""}</h2>
-              <p>Your altogether service.</p>
-            </div>
-
-            <div className="quick-stats">
-              <div
-                className="stat-card clickable"
-                onClick={() => setActivePage("appointments")}
-              >
-                <h3>{appointments.length}</h3>
-                <p>Total Appointments</p>
-              </div>
-
-              <div
-                className="stat-card clickable"
-                onClick={() => setActivePage("messages")}
-              >
-                <h3>{messages.length}</h3>
-                <p>Total Messages</p>
-              </div>
-            </div>
-
-          </>
-        )} 
         {activePage === "map" && <Map />}
+          <Chatbot />
       </main>
     </div>
   );

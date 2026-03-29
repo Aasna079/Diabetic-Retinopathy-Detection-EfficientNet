@@ -8,79 +8,124 @@ export default function DoctorDashboard() {
   const [activePage, setActivePage] = useState("dashboard");
   const [percentage, setPercentage] = useState(0);
   const [fileName, setFileName] = useState("");
-  const [cases, setCases] = useState([]);
   const [doctor, setDoctor] = useState(null);
   const [aiResult, setAiResult] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [fileName, setFileName] = useState("");
-  const [showMore, setShowMore] = useState(false);
-  const [showFullReport, setShowFullReport] = useState(false);
+  const [patients, setPatients] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedPatientForDiagnosis, setSelectedPatientForDiagnosis] = useState(null);
   const [patient, setPatient] = useState({
     name: "",
     email: "",
     date: "",
+    id: ""
   });
-  const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate();
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [showDiagnosis, setShowDiagnosis] = useState(false);
+  const [showAllReports, setShowAllReports] = useState(false); // for show more button
+  const [expandedReportId, setExpandedReportId] = useState(null); // which report is expanded
+  const handleBackToPatientList = () => {
+    setSelectedPatient(null);
+    setSelectedPatientForDiagnosis(null);
+    setAiResult(null);
+    setPercentage(0);
+    setFileName("");
+    setPatient({ name: "", email: "", date: "", id: "" });
+    setExpandedReportId(null);
+    setShowAllReports(false);
+    setSearchTerm("");          // reset search
+    setActivePage("mypatients"); // ensure page switches
+  };
 
-// Example patient data
-  const patients = [
-    { name: "Soham Adhikari", phone: "9841234567" },
-    { name: "Ram Sharma", phone: "9841111111" },
-    { name: "Sita Rai", phone: "9841222222" },
-    { name: "Hari Thapa", phone: "9841333333" },
-    { name: "Gita Karki", phone: "9841444444" },
-    { name: "Priya Karki", phone: "98098744" },
-    { name: "Soni Karki", phone: "980774736" },
-    { name: "Surekha Karki", phone: "99378483232" },
-    { name: "Somiya Karki", phone: "987376275" },
-  ];
+// // Example patient data
+//   const patients = [
+//     { name: "Soham Adhikari", phone: "9841234567" },
+//     { name: "Ram Sharma", phone: "9841111111" },
+//     { name: "Sita Rai", phone: "9841222222" },
+//     { name: "Hari Thapa", phone: "9841333333" },
+//     { name: "Gita Karki", phone: "9841444444" },
+//     { name: "Priya Karki", phone: "98098744" },
+//     { name: "Soni Karki", phone: "980774736" },
+//     { name: "Surekha Karki", phone: "99378483232" },
+//     { name: "Somiya Karki", phone: "987376275" },
+//   ];
 
   // Filter patients by search term
   const filteredPatients = patients.filter((p) =>
-    p.phone.includes(searchTerm)
+    (p.phone || "").includes(searchTerm)
   );
 
-  const fakeDiagnosis = {
-    condition: "Diabetic Retinopathy",
-    severity: "Moderate",
-    notes:
-      "Signs of microaneurysms and mild retinal hemorrhages detected. Recommend strict blood sugar control and follow-up in 3 months.",
-  };
+//   const fakeDiagnosis = {
+//     condition: "Diabetic Retinopathy",
+//     severity: "Moderate",
+//     notes:
+//       "Signs of microaneurysms and mild retinal hemorrhages detected. Recommend strict blood sugar control and follow-up in 3 months.",
+//   };
 
-  const fakeReports = [
-    { date: "2026-03-10", result: "Retinal scan shows early-stage abnormalities." },
-    { date: "2026-02-15", result: "Vision slightly blurred; possible diabetic changes observed." },
-    { date: "2026-01-05", result: "Routine eye checkup. No major issues, baseline recorded." },
-  ];
+//   const fakeReports = [
+//     { date: "2026-03-10", result: "Retinal scan shows early-stage abnormalities." },
+//     { date: "2026-02-15", result: "Vision slightly blurred; possible diabetic changes observed." },
+//     { date: "2026-01-05", result: "Routine eye checkup. No major issues, baseline recorded." },
+//   ];
 
 
 
   /* ---------------- LOAD USER + CASES ---------------- */
   useEffect(() => {
-    fetch("http://localhost:5000/api/me", {
-    credentials: "include", // IMPORTANT (sends cookie)
-    })
+  // Load doctor info
+  fetch("http://localhost:5000/api/me", { credentials: "include" })
     .then(res => res.json())
     .then(data => {
       if (!data.error) {
         setDoctor(data);
+
+        // Fetch real patients for this doctor
+        fetch(`http://localhost:5000/api/patients?doctor_id=${data.uuid}`)
+          .then(res => res.json())
+          .then(patientsData => {
+            console.log("Patients from backend:", patientsData);
+            setPatients(patientsData);
+          })
+          .catch(err => console.error("Error fetching patients:", err));
       }
     })
     .catch(err => console.error("Error loading user:", err));
+    
+}, []);
 
-    fetch("http://localhost:5000/api/predictions")
-      .then((res) => res.json())
-      .then((data) => {
-        setCases(data || []);
-      })
-      .catch((err) => {
-        console.error("Error fetching predictions:", err);
-        setCases([]);
-      });
-  }, []);
+  // Load reports whenever a patient is selected
+  useEffect(() => {
+    if (selectedPatient) {
+      fetch(`http://localhost:5000/api/patient_reports?patient_id=${selectedPatient.uuid}`)
+        .then(res => res.json())
+        .then(data => {
+          // add the reports to the selectedPatient object
+          setSelectedPatient(prev => ({
+            ...prev,
+            reports: data
+          }));
+        })
+        .catch(err => console.error("Error fetching patient reports:", err));
+    }
+  }, [selectedPatient]);
+ 
+  useEffect(() => {
+    if (activePage !== "dashboard") {
+      setAiResult(null);
+      setFileName("");
+      setPercentage(0);
+      setPatient({ name: "", email: "", date: "", id: "" });
+      setSelectedPatientForDiagnosis(null);
+    } else {
+      // When entering dashboard but no patient was selected for diagnosis
+      if (!selectedPatientForDiagnosis) {
+        setPatient({ name: "", email: "", date: "", id: "" });
+        setAiResult(null);
+        setPercentage(0);
+        setFileName("");
+      }
+    }
+  }, [activePage]);
 
   /* ---------------- FILE UPLOAD ---------------- */
   const handleFileChange = async (e) => {
@@ -102,9 +147,14 @@ export default function DoctorDashboard() {
       console.log("Doctor being sent:", doctor);
 
       const formData = new FormData();
-      formData.append('patient_name', 'Demo Patient');
-      formData.append('patient_email', 'demo@patient.com');
-      formData.append('doctor_name', doctor.name);
+      if (selectedPatientForDiagnosis) {
+        formData.append('patient_id', selectedPatientForDiagnosis.uuid);
+        formData.append('patient_name', selectedPatientForDiagnosis.name);
+        formData.append('patient_email', selectedPatientForDiagnosis.email);
+      } else {
+        formData.append('patient_id', null);
+      }
+      formData.append('doctor_id', doctor.uuid);
       formData.append('image', file);
 
       console.log('🚀 Uploading to backend API: http://localhost:5000/api/predict');
@@ -125,14 +175,33 @@ export default function DoctorDashboard() {
 
       setAiResult(result);
 
+      // Only attach report if a patient is selected for diagnosis
+      if (selectedPatientForDiagnosis) {
+        const newReport = {
+          ...result,
+          date: new Date().toISOString(),
+          prediction_id: result.prediction_id || `${Date.now()}-${Math.random()}`,
+        };
+
+        setSelectedPatient(prev => ({
+          ...prev,
+          reports: prev.reports ? [newReport, ...prev.reports] : [newReport],
+        }));
+      }
+
       const confidenceValue = result?.confidence || 0;
       setPercentage((confidenceValue * 100).toFixed(2));
 
-      setPatient({
-        name: 'Rena',
-        email: 'rena123@gmail.com',
-        date: '2026-03-24'
-      });
+      if (selectedPatientForDiagnosis) {
+        setPatient({
+          name: selectedPatientForDiagnosis.name,
+          email: selectedPatientForDiagnosis.email,
+          date: new Date().toISOString().split("T")[0], // today
+          id: selectedPatientForDiagnosis.uuid
+        });
+      } else {
+        setPatient({ name: '', email: '', date: '', id: '' });
+      }
 
     } catch (error) {
       console.error('❌ Upload failed:', error);
@@ -190,6 +259,7 @@ export default function DoctorDashboard() {
             className={activePage === "dashboard" ? "active" : ""}
             onClick={() => setActivePage("dashboard")}
           >
+            <img src="/dashboard.png" alt="dashboard" className="menu-icon" />
             Dashboard
           </div>
 
@@ -197,6 +267,7 @@ export default function DoctorDashboard() {
             className={activePage === "mypatients" ? "active" : ""}
             onClick={() => setActivePage("mypatients")}
           >
+            <img src="/pat.png" alt="patients" className="menu-icon" />
             My Patients
           </div>
 
@@ -204,13 +275,14 @@ export default function DoctorDashboard() {
             className={activePage === "profile" ? "active" : ""}
             onClick={() => setActivePage("profile")}
           >
+            <img src="/patient.png" alt="profile" className="menu-icon" />
             Profile
           </div>
         </nav>
 
-        {/* Logout */}
         <div className="logout-btn" onClick={handleLogout}>
-          <img src="/logout.png" className="sidebar-icon1" /> Logout
+          <img src="/logout.png" alt="logout" className="sidebar-icon1" />
+          Logout
         </div>
       </aside>
 
@@ -319,12 +391,6 @@ export default function DoctorDashboard() {
 
                   <hr />
 
-                  {/* ── 7. mongo_id ── */}
-                  <p><strong>mongo_id:</strong> {fmt(aiResult.mongo_id)}</p>
-
-                  {/* ── 8. notes ── */}
-                  <p><strong>notes:</strong> {fmt(aiResult.notes)}</p>
-
                   {/* ── 9. patient_id ── */}
                   <p><strong>patient_id:</strong> {fmt(aiResult.patient_id)}</p>
 
@@ -362,19 +428,8 @@ export default function DoctorDashboard() {
                   {/* ── 13. severity ── */}
                   <p><strong>severity:</strong> {fmt(aiResult.severity)}</p>
 
-                  {/* ── 14. stored_file ── */}
-                  <p><strong>stored_file:</strong> {fmt(aiResult.stored_file)}</p>
-
                   {/* ── 15. timestamp ── */}
                   <p><strong>timestamp:</strong> {fmt(aiResult.timestamp)}</p>
-
-                  {/* ── 16. tta_used ── */}
-                  <p>
-                    <strong>tta_used:</strong>{" "}
-                    {aiResult.tta_used !== undefined && aiResult.tta_used !== null
-                      ? String(aiResult.tta_used)
-                      : "N/A"}
-                  </p>
 
                   <hr />
 
@@ -412,45 +467,189 @@ export default function DoctorDashboard() {
           </>
         )}
 
-        {/* ---------- MY PATIENTS ---------- */}
+                {/* ---------- MY PATIENTS ---------- */}
         {activePage === "mypatients" && (
-          <>
-            <div className="section-label">Cases Now</div>
-            <div className="section-title">Live Cases</div>
-
-            <div className="card">
-              {cases.length === 0 ? (
-                <div className="no-data">No live cases available</div>
+          <div className="card">
+            <div className="top-bar">     
+              {!selectedPatient ? (
+                <div className="search-container">
+              
+                  <input
+                    type="text"
+                    placeholder="Search by phone number..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
               ) : (
-                <table>
-                  <thead>
-                    <tr>
-                      <th>S.No.</th>
-                      <th>Patient Name</th>
-                      <th>Email</th>
-                      <th>Date</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {cases.map((c, index) => (
-                      <tr key={c._id || index}>
-                        <td>{index + 1}</td>
-                        <td>{c.name}</td>
-                        <td>{c.email}</td>
-                        <td>{c.date}</td>
-                        <td>
-                          <button className="accept-btn">Accept</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <button
+                  className="back-btn"
+                  onClick={() => {
+                    setSelectedPatient(null);
+                  }}
+                >
+                  ← Back
+                </button>
               )}
             </div>
-          </>
+
+            {/* Patient list */}
+            {!selectedPatient && (
+              <>
+                <div className="patient-header">
+                  <div className="sn">S.N.</div>
+                  <div className="name">Name</div>
+                  <div className="phone">Phone no.</div>
+                </div>
+
+                <div className="patient-list">
+                  {filteredPatients.map((p, index) => (
+                    <div
+                      className="patient-row"
+                      key={index}
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        setSelectedPatient({
+                          ...p,
+                          diagnosis: null,  // empty for now
+                          reports: [], 
+                        })
+                      }
+                    >
+                      <div className="sn">{index + 1}.</div>
+                      <div className="name">{p.name}</div>
+                      <div className="phone">{p.phone}</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Selected patient details */}
+            {selectedPatient && (
+              <>
+                <div className="patient-header">
+                  <p className="breadcrumb">Patient</p>
+                  <div className="patient-top">
+                    <div className="patient-basic">
+                      <div>
+                        <h2>{selectedPatient.name}</h2>
+                        <p className="patient-meta">Number: {selectedPatient.phone}</p>
+                      </div>
+                      <span className="status-badge">{selectedPatient.status || "Active"}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="patient-section">
+                  <h3>Personal Information</h3>
+                  <div className="info-grid">
+                    <div>
+                      <span>Patient Name</span>
+                      <p>{selectedPatient.name}</p>
+                    </div>
+                    <div>
+                      <span>Age</span>
+                      <p>{selectedPatient.age || "-"}</p>
+                    </div>
+                    <div>
+                      <span>Gender</span>
+                      <p>{selectedPatient.gender || "-"}</p>
+                    </div>
+                    <div>
+                      <span>Email</span>
+                      <p>{selectedPatient.email || "-"}</p>
+                    </div>
+                    <div>
+                      <span>Phone Number</span>
+                      <p>{selectedPatient.phone}</p>
+                    </div>
+                    <div>
+                      <span>Blood Group</span>
+                      <p>{selectedPatient.bloodGroup || "-"}</p>
+                    </div>
+                    <div>
+                      <span>Address</span>
+                      <p>{selectedPatient.address || "-"}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="action-bar">
+                  <button
+                    className="diagnose-btn"
+                    onClick={() => {
+                      // 1. Store selected patient for diagnosis
+                      setSelectedPatientForDiagnosis(selectedPatient);
+
+                      // 2. Switch to dashboard
+                      setActivePage("dashboard");
+                    }}
+                  >
+                    + Diagnose Patient
+                  </button>
+                </div>
+
+
+                <div className="patient-section">
+                  <h3>Reports</h3>
+                  {selectedPatient.reports && selectedPatient.reports.length > 0 ? (
+                    <>
+                      {(showAllReports
+                        ? selectedPatient.reports
+                        : selectedPatient.reports.slice(0, 3) // first 3 reports by default
+                      ).map((report, index) => (
+                        <div
+                          key={report.prediction_id || index}
+                          className="report-row"
+                          style={{ cursor: "pointer" }}
+                          onClick={() =>
+                            setExpandedReportId(
+                              expandedReportId === report.prediction_id
+                                ? null
+                                : report.prediction_id
+                            )
+                          }
+                        >
+                          <div className="report-summary">
+                            <span>{report.date?.split("T")[0] || "Unknown Date"}</span>
+                            <span>{report.class_name || "Unknown Diagnosis"}</span>
+                            <span>{(report.confidence * 100)?.toFixed(2) || "-"}%</span>
+                          </div>
+
+                          {/* Expanded report details */}
+                          {expandedReportId === report.prediction_id && (
+                            <div className="report-details">
+                              <p><strong>Condition:</strong> {report.class_name}</p>
+                              <p><strong>Severity:</strong> {report.severity}</p>
+                              <p><strong>Confidence:</strong> {(report.confidence*100).toFixed(2)}%</p>
+                              <p><strong>Notes:</strong> {report.notes || "-"}</p>
+                              <p><strong>Recommendation:</strong> {report.recommendation || "-"}</p>
+                              <p><strong>Filename:</strong> {report.filename}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+
+                      {/* Show More / Show Less */}
+                      {selectedPatient.reports.length > 3 && (
+                        <button
+                          className="show-more-btn"
+                          onClick={() => setShowAllReports(!showAllReports)}
+                        >
+                          {showAllReports ? "Show Less ▲" : "Show More ▼"}
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <p className="empty-text">No reports yet</p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         )}
+
 
         {/* ---------- PROFILE ---------- */}
         {activePage === "profile" && <Profile />}

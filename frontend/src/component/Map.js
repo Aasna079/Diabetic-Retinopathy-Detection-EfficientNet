@@ -7,6 +7,7 @@ export default function MapPage() {
   const hospitalMarkersRef = useRef([]);
   const userMarkerRef = useRef(null);
   const userCircleRef = useRef(null);
+  const routeControlRef = useRef(null); 
 
   const [location, setLocation] = useState("Detecting...");
   const [date, setDate] = useState("");
@@ -37,23 +38,45 @@ export default function MapPage() {
       mapInstance.current.setView([lat, lng], 14);
     }
 
-    // Remove old layers
     if (userMarkerRef.current)
       mapInstance.current.removeLayer(userMarkerRef.current);
     if (userCircleRef.current)
       mapInstance.current.removeLayer(userCircleRef.current);
 
-    // Add user marker
     userMarkerRef.current = L.marker([lat, lng])
       .addTo(mapInstance.current)
       .bindPopup("<b>Your Location</b>")
       .openPopup();
 
-    // Add accuracy circle
     userCircleRef.current = L.circle([lat, lng], {
       radius: accuracy,
       color: "#6c63ff",
       fillOpacity: 0.15,
+    }).addTo(mapInstance.current);
+  };
+
+  // ---------------- ROUTE FUNCTION ----------------
+  const showRoute = (hospital) => {
+    const L = window.L;
+    if (!L || !mapInstance.current || !userCoords) return;
+
+    // remove old route
+    if (routeControlRef.current) {
+      mapInstance.current.removeControl(routeControlRef.current);
+    }
+
+    routeControlRef.current = L.Routing.control({
+      waypoints: [
+        L.latLng(userCoords.lat, userCoords.lng),
+        L.latLng(hospital.lat, hospital.lng),
+      ],
+      routeWhileDragging: false,
+      addWaypoints: false,
+      draggableWaypoints: false,
+      createMarker: () => null,
+      lineOptions: {
+        styles: [{ color: "#2e7d32", weight: 5 }],
+      },
     }).addTo(mapInstance.current);
   };
 
@@ -72,75 +95,75 @@ export default function MapPage() {
     return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   };
 
-  // ---------------- FETCH EYE HOSPITALS + CLINICS ----------------
-const fetchNearbyHospitals = async (lat, lng) => {
-  try {
-    const radius = 8000; // increased range
+  // ---------------- FETCH HOSPITALS ----------------
+  const fetchNearbyHospitals = async (lat, lng) => {
+    try {
+      const radius = 8000;
 
-    const query = `
-    [out:json];
-    (
-      node["amenity"~"hospital|clinic"](around:${radius},${lat},${lng});
-      way["amenity"~"hospital|clinic"](around:${radius},${lat},${lng});
-      relation["amenity"~"hospital|clinic"](around:${radius},${lat},${lng});
-    );
-    out center;
-    `;
+      const query = `
+      [out:json];
+      (
+        node["amenity"~"hospital|clinic"](around:${radius},${lat},${lng});
+        way["amenity"~"hospital|clinic"](around:${radius},${lat},${lng});
+        relation["amenity"~"hospital|clinic"](around:${radius},${lat},${lng});
+      );
+      out center;
+      `;
 
-    const res = await fetch("https://overpass-api.de/api/interpreter", {
-      method: "POST",
-      body: query,
-    });
+      const res = await fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
+        body: query,
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-const hospitals = data.elements
-  .map((item) => {
-    const latH = item.lat || item.center?.lat;
-    const lngH = item.lon || item.center?.lon;
-    if (!latH || !lngH) return null;
+      const hospitals = data.elements
+        .map((item) => {
+          const latH = item.lat || item.center?.lat;
+          const lngH = item.lon || item.center?.lon;
+          if (!latH || !lngH) return null;
 
-    const name = item.tags?.name || "";
+          const name = item.tags?.name || "";
 
-    const isEye =
-      name.toLowerCase().includes("eye") ||
-      name.toLowerCase().includes("vision") ||
-      name.toLowerCase().includes("ophthalmology") ||
-      name.toLowerCase().includes("optical");
+          const isEye =
+            name.toLowerCase().includes("eye") ||
+            name.toLowerCase().includes("vision") ||
+            name.toLowerCase().includes("ophthalmology") ||
+            name.toLowerCase().includes("optical");
 
-    return {
-      id: item.id,
-      name: name || "Medical Center",
-      area:
-        item.tags?.["addr:suburb"] ||
-        item.tags?.["addr:city"] ||
-        "Nearby Area",
-      lat: latH,
-      lng: lngH,
-      distance: getDistance(lat, lng, latH, lngH),
-      isEye,
-    };
-  })
-  .filter(Boolean)
-  .sort((a, b) => {
-    if (a.isEye && !b.isEye) return -1;
-    if (!a.isEye && b.isEye) return 1;
-    return a.distance - b.distance;
-  })
-  .slice(0, 8);
+          return {
+            id: item.id,
+            name: name || "Medical Center",
+            area:
+              item.tags?.["addr:suburb"] ||
+              item.tags?.["addr:city"] ||
+              "Nearby Area",
+            lat: latH,
+            lng: lngH,
+            distance: getDistance(lat, lng, latH, lngH),
+            isEye,
+          };
+        })
+        .filter(Boolean)
+        .sort((a, b) => {
+          if (a.isEye && !b.isEye) return -1;
+          if (!a.isEye && b.isEye) return 1;
+          return a.distance - b.distance;
+        })
+        .slice(0, 8);
 
-    setNearbyHospitals(hospitals);
+      setNearbyHospitals(hospitals);
 
-    if (hospitals.length) {
-      setSelectedHospitalId(hospitals[0].id);
+      if (hospitals.length) {
+        setSelectedHospitalId(hospitals[0].id);
+      }
+
+      addMarkers(hospitals);
+    } catch (err) {
+      console.error(err);
+      setNearbyHospitals([]);
     }
-
-    addMarkers(hospitals);
-  } catch (err) {
-    console.error(err);
-    setNearbyHospitals([]);
-  }
-};
+  };
 
   // ---------------- ADD MARKERS ----------------
   const addMarkers = (hospitals) => {
@@ -163,7 +186,7 @@ const hospitals = data.elements
     });
   };
 
-  // ---------------- LOCATION NAME ----------------
+  // ---------------- LOCATION ----------------
   const getLocationName = async (lat, lng) => {
     try {
       const res = await fetch(
@@ -187,14 +210,6 @@ const hospitals = data.elements
   // ---------------- INIT ----------------
   useEffect(() => {
     const init = () => {
-      if (!navigator.geolocation) {
-        const lat = 27.7172;
-        const lng = 85.324;
-        loadMap(lat, lng);
-        fetchNearbyHospitals(lat, lng);
-        return;
-      }
-
       navigator.geolocation.watchPosition(
         async (pos) => {
           const { latitude, longitude, accuracy } = pos.coords;
@@ -215,16 +230,30 @@ const hospitals = data.elements
       );
     };
 
-    // Load Leaflet
+    // Load Leaflet + Routing
     if (!window.L) {
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = "https://unpkg.com/leaflet/dist/leaflet.css";
       document.head.appendChild(link);
 
+      const routingCSS = document.createElement("link");
+      routingCSS.rel = "stylesheet";
+      routingCSS.href =
+        "https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css";
+      document.head.appendChild(routingCSS);
+
       const script = document.createElement("script");
       script.src = "https://unpkg.com/leaflet/dist/leaflet.js";
-      script.onload = init;
+
+      script.onload = () => {
+        const routingScript = document.createElement("script");
+        routingScript.src =
+          "https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js";
+        routingScript.onload = init;
+        document.body.appendChild(routingScript);
+      };
+
       document.body.appendChild(script);
     } else {
       init();
@@ -242,10 +271,12 @@ const hospitals = data.elements
 
     const marker = hospitalMarkersRef.current.find((m) => m.id === h.id);
     if (marker) marker.marker.openPopup();
+
+    showRoute(h); // ✅ ROUTE TRIGGER
   };
 
   // ---------------- UI ----------------
-    return (
+  return (
     <div className="map-page">
       <div className="top-bar">
         <div className="filters">
@@ -266,24 +297,33 @@ const hospitals = data.elements
 
       <div className="content">
         <div className="left-panel">
-          <h3>Nearby Eye Hopsital and Clinics</h3>
-          {nearbyHospitals.length > 0 ? (
-            nearbyHospitals.map((hospital) => (
-              <div
-                key={hospital.id}
-                className={`card ${selectedHospitalId === hospital.id ? "active" : ""}`}
-                onClick={() => handleHospitalClick(hospital)}
-                style={{ cursor: "pointer" }}
+          <h3>Nearby Eye Hospital and Clinics</h3>
+
+          {nearbyHospitals.map((hospital) => (
+            <div
+              key={hospital.id}
+              className={`card ${
+                selectedHospitalId === hospital.id ? "active" : ""
+              }`}
+              onClick={() => handleHospitalClick(hospital)}
+            >
+              <h4>{hospital.name}</h4>
+              <p>{hospital.area}</p>
+              <p>{hospital.distance.toFixed(2)} km away</p>
+
+              <button
+                className="nav-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  showRoute(hospital);
+                }}
               >
-                <h4>{hospital.name}</h4>
-                <p>{hospital.area}</p>
-                <p>{hospital.distance.toFixed(2)} km away</p>
-              </div>
-            ))
-          ) : (
-            <p>Loading nearby hospitals...</p>
-          )}
+                Show Route
+              </button>
+            </div>
+          ))}
         </div>
+
         <div className="map-container" ref={mapRef}></div>
       </div>
     </div>

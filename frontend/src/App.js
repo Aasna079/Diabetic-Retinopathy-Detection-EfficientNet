@@ -11,6 +11,7 @@ import PatientLogin from "./component/PatientLogin";
 import PatientRegister from "./component/PatientRegister";
 import ProtectedRoute from "./component/ProtectedRoute";
 import MapPage from './component/Map';
+import SetPassword from "./component/SetPassword";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
               }
           />
           <Route path="/Map" element={<MapPage />} />
+          <Route path="/set-password" element={<SetPassword />} />
         </Routes>
       </BrowserRouter>
     </>

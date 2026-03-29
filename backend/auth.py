@@ -24,7 +24,7 @@ def init_auth(users_collection, secret_key):
         email = data.get("email")
         password = data.get("password")
         role = data.get("role")
-
+        
         phone = None
         if role == "patient":
             phone = data.get("phone")
@@ -62,6 +62,8 @@ def init_auth(users_collection, secret_key):
             "uuid": uuid_id,
             "created_at": datetime.now()
         }
+        if role == "patient":
+            user_data["doctor_id"] = None
 
         try:
             users_collection.insert_one(user_data)
@@ -164,6 +166,7 @@ def init_auth(users_collection, secret_key):
                 "role": user.get("role"),
                 "phone": user.get("phone"),
                 "gender": user.get("gender"),
+                "uuid": user.get("uuid"),
                 "age": user.get("age"),
             })
 
@@ -173,4 +176,16 @@ def init_auth(users_collection, secret_key):
         except jwt.InvalidTokenError:
             return jsonify({"error": "Invalid token"}), 401   
 
+    @auth_bp.route("/api/patients", methods=["GET"])
+    def get_patients():
+        doctor_id = request.args.get("doctor_id")
+        if not doctor_id:
+            return jsonify({"error": "Missing doctor_id"}), 400
+
+        patients = list(users_collection.find({"role": "patient", "doctor_id": doctor_id}))
+        # Format response
+        for p in patients:
+            p["_id"] = str(p["_id"])
+        return jsonify(patients)
+    
     return auth_bp
