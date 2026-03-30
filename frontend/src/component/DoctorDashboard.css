@@ -1,19 +1,27 @@
 * {
   font-family: 'Raleway', sans-serif;
 }
+
 /* GLOBAL */
-body{
-  margin:0;
-  font-family: "Raleway", sans-serif;
-  background:#f5f7fb;
+body {
+  margin: 0;
+  background: #f5f7fb;
 }
 
-/* Layout */
+/* ================= LAYOUT ================= */
+
 .dashboard {
   display: flex;
   min-height: 100vh;
 }
-/* CARD WRAPPER */
+
+.main {
+  flex: 1;
+  padding: 30px 40px;
+}
+
+/* ================= CARD ================= */
+
 .card {
   background: #ffffff;
   padding: 25px;
@@ -21,7 +29,8 @@ body{
   box-shadow: 0 8px 25px rgba(0,0,0,0.05);
 }
 
-/* SEARCH BAR */
+/* ================= SEARCH ================= */
+
 .search-container {
   display: flex;
   justify-content: flex-end;
@@ -31,9 +40,8 @@ body{
 .search-container input {
   padding: 12px 18px;
   border-radius: 999px;
-  border: 1px solid #d1d5db;
-    background-color: #ecfdf5;
-     border: 2px solid #16a34a; 
+  background-color: #ecfdf5;
+  border: 2px solid #16a34a;
   width: 260px;
   font-size: 14px;
   transition: 0.2s;
@@ -45,7 +53,8 @@ body{
   outline: none;
 }
 
-/* HEADER */
+/* ================= PATIENT LIST ================= */
+
 .patient-header {
   display: grid;
   grid-template-columns: 60px 1fr 160px;
@@ -56,14 +65,12 @@ body{
   margin-bottom: 10px;
 }
 
-/* LIST */
 .patient-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-/* ROW (CARD STYLE) */
 .patient-row {
   display: grid;
   grid-template-columns: 60px 1fr 160px;
@@ -74,24 +81,24 @@ body{
   transition: 0.2s;
 }
 
-/* HOVER EFFECT */
 .patient-row:hover {
   background: #ecfdf5;
   transform: translateY(-2px);
 }
 
-/* TEXT */
 .sn {
   font-weight: 600;
   color: #374151;
-  border-right: 2px solid #e5e7eb;  /* 👈 line */
+  border-right: 2px solid #e5e7eb;
   padding-right: 10px;
 }
+
 .name {
   padding-left: 15px;
   font-size: 15px;
   color: #111827;
 }
+
 .phone {
   text-align: right;
   color: #16a34a;
@@ -106,21 +113,18 @@ body{
   left: 0;
   width: 250px;
   height: 100vh;
-
   display: flex;
-  flex-direction: column;  /* REQUIRED */
-
+  flex-direction: column;
   background: #fff;
   border-right: 1px solid #ddd;
 }
 
-/* Title area */
 .sidebar-title {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 20px;
-  border-bottom:1px solid #f1f1f1;
+  border-bottom: 1px solid #f1f1f1;
 }
 
 .sidebar-icon {
@@ -138,7 +142,6 @@ body{
   color: #6b7280;
 }
 
-/* Sidebar navigation */
 .sidebar nav {
   padding: 15px;
 }
@@ -154,7 +157,7 @@ body{
 
 .sidebar nav div:hover {
   background: #ecfdf5;
-  color:#15803d;
+  color: #15803d;
 }
 
 .sidebar nav .active {
@@ -162,42 +165,37 @@ body{
   color: #15803d;
   font-weight: 600;
 }
+
 .menu {
   flex: 1;
 }
+
 .menu-icon {
- width: 20px;
+  width: 20px;
   height: 20px;
   object-fit: contain;
   margin-right: 8px;
   vertical-align: middle;
 }
-/* Logout stays bottom */
+
 .logout-btn {
   padding: 12px 16px;
-  margin-top: auto; 
+  margin-top: auto;
   margin: 10px;
   color: #16a34a;
   cursor: pointer;
   border-radius: 8px;
-  bottom: 20px;
   width: 100%;
-
-  display: flex;          
+  display: flex;
   align-items: center;
 }
 
 .logout-btn:hover {
   background-color: #dcfce7;
 }
-/* ================= MAIN ================= */
 
-.main {
-  flex: 1;
-  padding: 30px 40px;
-}
+/* ================= UPLOAD ================= */
 
-/* Upload Section */
 .upload-section {
   background: white;
   padding: 30px;
@@ -206,7 +204,6 @@ body{
   margin-bottom: 30px;
 }
 
-/* Upload box */
 .upload-box {
   display: flex;
   justify-content: space-between;
@@ -214,12 +211,12 @@ body{
   border: 2px dashed #d1d5db;
   padding: 25px;
   border-radius: 10px;
-  transition:0.2s;
+  transition: 0.2s;
 }
 
-.upload-box:hover{
-  border-color:#16a34a;
-  background:#f9fdfb;
+.upload-box:hover {
+  border-color: #16a34a;
+  background: #f9fdfb;
 }
 
 .upload-left {
@@ -233,335 +230,34 @@ body{
   color: #16a34a;
 }
 
-/* Upload button */
 .upload-btn {
   background: #16a34a;
   color: white;
   padding: 10px 26px;
-  cursor: pointer;
   font-weight: 500;
-  transition:0.2s;
-  margin: auto;
+  transition: 0.2s;
   width: 100px;
   border-radius: 40px;
+  text-align: center;
   cursor: pointer;
-  text-align: right;
-    
 }
 
-.upload-btn:hover{
-  background:#15803d;
+.upload-btn:hover {
+  background: #15803d;
 }
 
-/* File name */
 .file-name {
   font-size: 13px;
   color: #16a34a;
 }
 
-/* Percentage bar */
-
 .percentage-bar {
-  margin-top:20px;
-  background: linear-gradient(90deg,#16a34a,#22c55e);
+  margin-top: 20px;
+  background: linear-gradient(90deg, #16a34a, #22c55e);
   padding: 14px;
   border-radius: 8px;
   color: white;
-  text-align:center;
-  font-size:17px;
-  font-weight:600;
-}
-
-/* Card area */
-
-.card {
-  background:white;
-  padding:25px;
-  border-radius:14px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.04);
-}
-
-/* ================= REPORT ================= */
-
-.patient-report{
-background:#f9fbfc;
-padding:25px;
-border-radius:10px;
-margin-top:20px;
-border:1px solid #e5e5e5;
-}
-
-/* Form layout */
-
-.patient-form{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-  margin-bottom:15px;
-}
-
-.patient-form input{
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #16a34a;
-  font-size:14px;
-}
-
-.patient-form input:focus{
-  outline:none;
-  border-color:#16a34a;
-}
-
-/* DR stage */
-
-.dr-stage{
-  color:#dc2626;
-  font-weight:600;
-}
-
-/* Medical note */
-
-.medical-note{
-  margin-top:10px;
-  background:#ecfdf5;
-  padding:12px;
-  border-left:4px solid #16a34a;
-  border-radius:6px;
-  font-size:14px;
-}
-
-/* ================= TABLE ================= */
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  color:#16a34a;
-}
-
-th{
-  text-align:left;
-  padding:12px;
-  font-size:14px;
-  border-bottom:1px solid #16a34a;
-}
-
-td{
-  padding:12px;
-  font-size:14px;
-  border-bottom:1px solid #16a34a;
-}
-
-/* Accept button */
-
-.accept-btn{
-  padding:6px 14px;
-  border-radius:8px;
-  border:1px solid #16a34a;
-  background:transparent;
-  color:#16a34a;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.accept-btn:hover{
-  background:#dcfce7;
-}
-
-.section-title {
   text-align: center;
-  font-size: 22px;
-  font-weight: 700;
-  color: #16a34a;
-  margin: 10px 0 25px;
-  position: relative;
-}
-
-/* lines on both sides */
-.section-title::before,
-.section-title::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 30%;
-  height: 2px;
-  background: #16a34a;
-}
-
-/* left line */
-.section-title::before {
-  left: 0;
-}
-
-/* right line */
-.section-title::after {
-  right: 0;
-}
-
-/*PATIENT PROFILE INNER PART*/
-/* 🔹 Breadcrumb */
-.breadcrumb {
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 10px;
-}
-
-.breadcrumb span {
-  color: #16a34a;
-  font-weight: 500;
-}
-
-/* 🔹 Top section */
-.patient-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.patient-basic {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.patient-basic h2 {
-  margin: 0;
-  font-size: 22px;
-  color: #111827;
-}
-
-.patient-meta {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-/* 🔹 Status badge */
-.status-badge {
-  background: #dcfce7;
-  color: #16a34a;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+  font-size: 17px;
   font-weight: 600;
-}
-
-/* 🔹 Section card */
-.patient-section {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.patient-section h3 {
-  margin-bottom: 15px;
-  color: #111827;
-}
-
-/* 🔹 Info grid */
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-}
-
-.info-grid div {
-  background: #f9fafb;
-  padding: 12px;
-  border-radius: 8px;
-}
-
-.info-grid span {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.info-grid p {
-  margin: 4px 0 0;
-  font-weight: 500;
-  color: #111827;
-}
-
-/* 🔹 Back button */
-button {
-  margin-bottom: 15px;
-  background: #16a34a;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-button:hover {
-  background: #15803d;
-}
-
-/* 🔹 Smooth transition */
-.patient-section,
-.patient-header {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.action-bar {
-  margin: 20px 0;
-  text-align: right;
-}
-
-.diagnose-btn {
-  background: #16a34a;
-  color: white;
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-}
-
-.patient-section {
-  margin-top: 20px;
-  padding: 16px;
-  background: #f9fafb;
-  border-radius: 10px;
-}
-
-.empty-text {
-  color: #888;
-  font-style: italic;
-}
-
-.report-item {
-  background: white;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 6px;
-}
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.4);
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  width: 400px;
-  margin: 100px auto;
-  border-radius: 10px;
 }

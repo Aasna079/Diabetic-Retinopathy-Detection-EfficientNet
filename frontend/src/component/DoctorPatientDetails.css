@@ -1,0 +1,294 @@
+/* ROOT WRAPPER */
+.patient-details-container {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+}
+
+/* BACK BUTTON
+.back-btn {
+  margin-bottom: 15px;
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+} */
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+/* Clean button */
+.back-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  width: fit-content;
+  margin-bottom: 12px;
+}
+
+
+
+.back-btn:hover {
+  background: #15803d;
+}
+
+/* ================= TOP SECTION ================= */
+
+.patient-basic {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  width: 100%;
+  gap: 20px;
+}
+
+.patient-basic h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #111827;
+}
+
+.patient-meta {
+  font-size: 14px;
+  color: #29c07b;
+}
+
+/* STATUS BADGE */
+.status-badge {
+  background: #dcfce7;
+  color: #16a34a;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ================= INFO GRID ================= */
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 15px;
+}
+
+.info-grid div {
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.info-grid span {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.info-grid p {
+  margin: 4px 0 0;
+  font-weight: 500;
+  color: #111827;
+}
+
+.patient-details-page {
+  padding: 30px 40px;   /* same as dashboard main */
+}
+
+.patient-details-container {
+  position: relative;   /* IMPORTANT */
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+}
+
+/* ================= ACTION ================= */
+
+.action-bar {
+  margin: 20px 0;
+  text-align: right;
+}
+
+.diagnose-btn {
+  background: #16a34a;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+  width: fit-content;
+}
+
+.diagnose-btn:hover {
+  background: #15803d;
+}
+
+/* ================= SECTION TITLE ================= */
+
+.section-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #16a34a;
+  margin: 25px 0;
+  position: relative;
+}
+
+.section-title::before,
+.section-title::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 30%;
+  height: 2px;
+  background: #16a34a;
+}
+
+.section-title::before {
+  left: 0;
+}
+
+.section-title::after {
+  right: 0;
+}
+
+/* ================= REPORT LIST ================= */
+
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* REPORT ROW (same feel as patient-row) */
+.report-row {
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  align-items: center;
+  padding: 14px 10px;
+  border-radius: 12px;
+  background: #f9fafb;
+  transition: 0.2s;
+  border-bottom: 1.5px solid #cbd5f5;
+  cursor: pointer;
+  font-size: 16px;
+  color: #1f2937;
+}
+
+.report-row:hover {
+  background: #ecfdf5;
+  transform: translateY(-2px);
+}
+
+/* LEFT INDEX */
+.report-index {
+  font-weight: 600;
+  color: #374151;
+  border-right: 2px solid #e5e7eb;
+  padding-right: 10px;
+}
+
+/* MIDDLE */
+.report-main {
+  padding-left: 15px;
+}
+
+.report-main strong {
+  color: #111827;
+}
+
+.report-date {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* RIGHT */
+.report-confidence {
+  text-align: right;
+  color: #16a34a;
+  font-weight: 500;
+}
+
+/* ================= EXPANDED ================= */
+
+.report-details {
+  grid-column: 1 / -1;
+  margin-top: 10px;
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+/* recommendation */
+.medical-note {
+  margin-top: 12px;
+  background: #ecfdf5;
+  padding: 12px;
+  border-left: 4px solid #16a34a;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* risk */
+.risk-text {
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+/* ================= EMPTY ================= */
+
+.empty-text {
+  color: #888;
+  font-style: italic;
+}
+
+/* ================= BUTTON ================= */
+
+.show-more-btn {
+  margin-top: 12px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #16a34a;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  width: fit-content;
+}
+
+
+.show-more-btn:hover {
+  background: #15803d;
+}
+
+/* ================= ANIMATION ================= */
+
+.report-row,
+.patient-basic {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
