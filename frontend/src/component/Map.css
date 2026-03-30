@@ -89,15 +89,15 @@ body {
   border-radius: 14px;
   margin-bottom: 16px;
   background: #ffffff;
-  transition: all 0.25s ease;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+  /* transition: all 0.25s ease; */
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.03);
 }
 
-.card:hover {
+/* .card:hover {
   transform: translateY(-2px);
   border-color: #cfc7ff;
   box-shadow: 0 6px 16px rgba(108, 99, 255, 0.08);
-}
+} */
 
 .card.active {
   border: 2px solid #29c07b;
@@ -118,11 +118,11 @@ body {
   color: #5b6170;
 }
 
-.card p:last-child {
+/* .card p:last-child {
   margin-top: 10px;
   font-weight: 600;
   color: #29c07b;
-}
+} */
 
 /* ================= MAP ================= */
 .map-container {

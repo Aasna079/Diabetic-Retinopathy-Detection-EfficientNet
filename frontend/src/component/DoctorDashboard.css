@@ -104,6 +104,47 @@ body {
   color: #16a34a;
   font-weight: 500;
 }
+ /* ================= details layout ================= */
+.probpre {
+  display: flex;
+  gap: 6px;
+}
+
+.pre {
+  color: #636363;
+  font-weight: bold;
+}
+
+/* Highlight BOTH key + value */
+.highlighted-p {
+  color: #29c07b;
+  font-weight: 600;
+}
+
+.highlighted-p .prep {
+  color: #29c07b;
+}
+
+.reso{
+    display: flex;
+    flex-direction: column;
+}
+.reso1{
+    margin-bottom: 12px;
+}
+.reso2{
+    color: #636363;
+    font-weight: 550;
+    font-size: 15.5px;
+}
+hr {
+  border: none;
+  height: 2px;
+  background-color: #c0c5c7;
+  margin: 15px 0;
+  /* border-radius: 2px; */
+}
+
 
 /* ================= SIDEBAR ================= */
 

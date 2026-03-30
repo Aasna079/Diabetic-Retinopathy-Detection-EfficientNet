@@ -6,17 +6,6 @@
   box-shadow: 0 8px 25px rgba(0,0,0,0.05);
 }
 
-/* BACK BUTTON
-.back-btn {
-  margin-bottom: 15px;
-  background: #16a34a;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s;
-} */
 
 .top-row {
   display: flex;
@@ -75,6 +64,51 @@
   font-size: 12px;
   font-weight: 600;
 }
+
+.highlighted-p{
+    margin-top: 10px;
+    font-weight: 600;
+    color: #29c07b;
+}
+.highlighted-p .pre {
+  color: #29c07b;
+}
+.probpre{
+    display: flex;
+    flex-direction: row;
+}
+
+.pre{
+    color: #636363;
+    font-weight: bold;
+}
+
+.reco{
+    display: flex;
+    flex-direction: column;
+}
+.reco1{
+    margin-bottom: 12px;
+}
+.reco2{
+    color: #636363;
+    font-weight: 550;
+    font-size: 15.65px;
+}
+
+.report-image {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.report-image img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  object-fit: cover;
+}
+
 
 /* ================= INFO GRID ================= */
 
@@ -164,6 +198,7 @@
 .section-title::after {
   right: 0;
 }
+
 
 /* ================= REPORT LIST ================= */
 

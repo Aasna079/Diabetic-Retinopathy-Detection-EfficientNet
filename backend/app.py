@@ -246,7 +246,7 @@ def predict():
             "filename": file.filename,
             "stored_file": None,
 
-            "prediction_id": str(uuid.uuid4()),
+            # "prediction_id": str(uuid.uuid4()),
 
             "probabilities": result.get("probabilities"),
             "model_metrics": result.get("model_metrics", {}),
@@ -327,14 +327,21 @@ def get_patient_reports():
     reports = list(predictions_collection.find({"patient_id": patient_id}))
     for r in reports:
         r["_id"] = str(r["_id"])
+        if "image_id" in r:
+            r["image_id"] = str(r["image_id"])
     return jsonify(reports)
     
 @app.route("/api/patients", methods=["GET"])
 def get_patients():
-    doctor_id = request.args.get("doctor_id")
     if not mongodb_initialized:
         return jsonify([])
-    patients = list(users_collection.find({"doctor_id": doctor_id}))
+
+    doctor_id = request.args.get("doctor_id")
+    query = {}
+    if doctor_id:
+        query["doctor_id"] = doctor_id
+
+    patients = list(users_collection.find(query))
     for p in patients:
         p["_id"] = str(p["_id"])
     return jsonify(patients)
@@ -350,6 +357,16 @@ def chat():
     except Exception as e:
         print("ERROR:", e)
         return jsonify({"reply": "Server error occurred."})
+
+@app.route('/api/image/<image_id>', methods=['GET'])
+def get_image(image_id):
+    try:
+        file = fs.get(ObjectId(image_id))
+        return file.read(), 200, {
+            'Content-Type': file.content_type or 'image/jpeg'
+        }
+    except Exception as e:
+        return jsonify({"error": str(e)}), 404
 
 # Chatbot logic
 def chatbot_reply(msg):

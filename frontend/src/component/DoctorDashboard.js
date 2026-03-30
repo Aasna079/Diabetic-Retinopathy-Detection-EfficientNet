@@ -63,27 +63,24 @@ export default function DoctorDashboard() {
     setAiResult(null);
 
     try {
-      //  STOP upload if doctor not loaded
       if (!doctor) {
         alert("Doctor not loaded yet. Please wait.");
+        setUploading(false);
         return;
       }
 
-      //  Debug (very important)
-      console.log("Doctor being sent:", doctor);
-
       const formData = new FormData();
+      formData.append('doctor_id', doctor.uuid || doctor._id || doctor.id);
+
       if (selectedPatientForDiagnosis) {
-        formData.append('patient_id', selectedPatientForDiagnosis.uuid);
+        formData.append('patient_id', selectedPatientForDiagnosis.uuid || selectedPatientForDiagnosis._id);
         formData.append('patient_name', selectedPatientForDiagnosis.name);
         formData.append('patient_email', selectedPatientForDiagnosis.email);
       } else {
-        formData.append('patient_id', null);
+        formData.append('patient_id', "demo_patient"); // fallback
       }
-      formData.append('doctor_id', doctor.uuid);
-      formData.append('image', file);
 
-      console.log('🚀 Uploading to backend API: http://localhost:5000/api/predict');
+      formData.append('image', file);
 
       const response = await fetch('http://localhost:5000/api/predict', {
         method: 'POST',
@@ -92,37 +89,30 @@ export default function DoctorDashboard() {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Backend error response:', errorText);
         throw new Error(`Backend error: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
-      console.log('✅ AI Analysis Result:', result);
-
       setAiResult(result);
 
-      // Only attach report if a patient is selected for diagnosis
+      // Save report locally if patient selected
       if (selectedPatientForDiagnosis) {
         const newReport = {
           ...result,
           date: new Date().toISOString(),
           prediction_id: result.prediction_id || `${Date.now()}-${Math.random()}`,
         };
+        localStorage.setItem("patientReport", JSON.stringify(newReport));
       }
 
-      const confidenceValue = result?.confidence || 0;
-      setPercentage((confidenceValue * 100).toFixed(2));
+      setPercentage((result?.confidence || 0 * 100).toFixed(2));
 
-      if (selectedPatientForDiagnosis) {
-        setPatient({
-          name: selectedPatientForDiagnosis.name,
-          email: selectedPatientForDiagnosis.email,
-          date: new Date().toISOString().split("T")[0], // today
-          id: selectedPatientForDiagnosis.uuid
-        });
-      } else {
-        setPatient({ name: '', email: '', date: '', id: '' });
-      }
+      setPatient({
+        name: selectedPatientForDiagnosis?.name || "",
+        email: selectedPatientForDiagnosis?.email || "",
+        date: new Date().toISOString().split("T")[0],
+        id: selectedPatientForDiagnosis?.uuid || "",
+      });
 
     } catch (error) {
       console.error('❌ Upload failed:', error);
@@ -225,40 +215,38 @@ export default function DoctorDashboard() {
                       onChange={handlePatientChange}
                     />
                   </div>
-
-                  <hr />
-
+                  <br />
                   {/* ── 1. class_id ── */}
-                  <p><strong>class_id:</strong> {fmt(aiResult.class_id)}</p>
+                  <p><strong>Class_id:</strong> {fmt(aiResult.class_id)}</p>
 
                   {/* ── 2. class_name ── */}
-                  <p><strong>class_name:</strong> {fmt(aiResult.class_name)}</p>
+                  <p><strong>Class_name:</strong> {fmt(aiResult.class_name)}</p>
 
                   {/* ── 3. confidence ── */}
                   <p>
-                    <strong>confidence:</strong>{" "}
+                    <strong>Confidence:</strong>{" "}
                     {aiResult.confidence !== undefined && aiResult.confidence !== null
                       ? aiResult.confidence
                       : "N/A"}
                   </p>
 
                   {/* ── 4. doctor_id ── */}
-                  <p><strong>doctor_id:</strong> {fmt(aiResult.doctor_id)}</p>
+                  <p><strong>Doctor_id:</strong> {fmt(aiResult.doctor_id)}</p>
 
                   {/* ── 5. filename ── */}
-                  <p><strong>filename:</strong> {fmt(aiResult.filename)}</p>
+                  <p><strong>Filename:</strong> {fmt(aiResult.filename)}</p>
 
                   <hr />
 
                   {/* ── 6. model_metrics ── */}
                   <div>
-                    <strong>model_metrics:</strong>
+                    <strong>Model_Metrics:</strong>
                     {aiResult.model_metrics && Object.keys(aiResult.model_metrics).length > 0 ? (
                       <div style={{ paddingLeft: "16px" }}>
-                        <p><strong>f1_score:</strong> {fmt(aiResult.model_metrics.f1_score)}</p>
-                        <p><strong>precision:</strong> {fmt(aiResult.model_metrics.precision)}</p>
-                        <p><strong>recall:</strong> {fmt(aiResult.model_metrics.recall)}</p>
-                        <p><strong>support:</strong> {fmt(aiResult.model_metrics.support)}</p>
+                        <p className="probpre"><div className="pre">F1_score: </div>{fmt(aiResult.model_metrics.f1_score)}</p>
+                        <p className="probpre"><div className="pre">Precision: </div>{fmt(aiResult.model_metrics.precision)}</p>
+                        <p className="probpre"><div className="pre">Recall: </div>{fmt(aiResult.model_metrics.recall)}</p>
+                        <p className="probpre"><div className="pre">Support: </div>{fmt(aiResult.model_metrics.support)}</p>
                         {aiResult.model_metrics.overall_accuracy !== undefined && (
                           <p><strong>overall_accuracy:</strong> {fmt(aiResult.model_metrics.overall_accuracy)}</p>
                         )}
@@ -271,10 +259,10 @@ export default function DoctorDashboard() {
                   <hr />
 
                   {/* ── 9. patient_id ── */}
-                  <p><strong>patient_id:</strong> {fmt(aiResult.patient_id)}</p>
+                  <p><strong>Patient_id:</strong> {fmt(aiResult.patient_id)}</p>
 
                   {/* ── 10. prediction_id ── */}
-                  <p><strong>prediction_id:</strong> {fmt(aiResult.prediction_id)}</p>
+                  <p><strong>Prediction_id:</strong> {fmt(aiResult.prediction_id)}</p>
 
                   <hr />
 
@@ -283,62 +271,30 @@ export default function DoctorDashboard() {
                     <strong>Probabilities:</strong>
                     {aiResult.probabilities && Object.keys(aiResult.probabilities).length > 0 ? (
                       <div style={{ paddingLeft: "16px" }}>
-                        {Object.entries(aiResult.probabilities)
-                          .sort((a, b) => a[1] - b[1]) // sort descending
-                          .map(([key, value]) => (
-                            <p key={key}>
-                              <strong>{key}:</strong> {value}
+                        {(() => {
+                          const sortedProbs = Object.entries(aiResult.probabilities)
+                            .sort((a, b) => a[1] - b[1]); // ascending (lowest → highest)
+
+                          const maxKey = sortedProbs[sortedProbs.length - 1]?.[0]; // LAST = highest
+
+                          return sortedProbs.map(([key, value]) => (
+                            <p
+                              key={key}
+                              className={`probpre ${key === maxKey ? "highlighted-p" : ""}`}
+                            >
+                              <span className="pre">{key}:</span> <span className="prep">{value}</span>
                             </p>
-                        ))}
+                          ));
+                        })()}
                       </div>
-                    ) : (
-                      <span> N/A</span>
-                    )}
+                    ) : <span>N/A</span>}
                   </div>
 
                   <hr />
 
                   {/* ── 12. recommendation ── */}
-                  <p><strong>Recommendation:</strong></p>
-                  <p style={{ paddingLeft: "16px" }}>{fmt(aiResult.recommendation)}</p>
-
-                  <hr />
-
-                  {/* ── 13. severity ── */}
-                  <p><strong>severity:</strong> {fmt(aiResult.severity)}</p>
-
-                  {/* ── 15. timestamp ── */}
-                  <p><strong>timestamp:</strong> {fmt(aiResult.timestamp)}</p>
-
-                  <hr />
-
-                  {/* ── 17. high_risk_flag ── */}
-                  {aiResult.high_risk_flag !== undefined && (
-                    <p>
-                      <strong>high_risk_flag:</strong>{" "}
-                      <span style={{ color: aiResult.high_risk_flag ? "red" : "green" }}>
-                        {String(aiResult.high_risk_flag)}
-                      </span>
-                    </p>
-                  )}
-
-                  {/* ── 18. warning (only when backend sends it) ── */}
-                  {aiResult.warning && (
-                    <>
-                      <hr />
-                      <p><strong style={{ color: "red" }}>warning:</strong></p>
-                      <p style={{ paddingLeft: "16px" }}>{aiResult.warning}</p>
-                    </>
-                  )}
-
-                  {/* ── 19. second_opinion (only when backend sends it) ── */}
-                  {aiResult.second_opinion && (
-                    <>
-                      <hr />
-                      <p><strong>second_opinion:</strong></p>
-                      <p style={{ paddingLeft: "16px" }}>{aiResult.second_opinion}</p>
-                    </>
-                  )}
+                  <div className="reso"><strong className="reso1">Recommendation:</strong>
+                  <div className="reso2">{fmt(aiResult.recommendation)}</div></div>
 
                 </div>
               )}
