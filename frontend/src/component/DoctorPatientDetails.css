@@ -6,7 +6,6 @@
   box-shadow: 0 8px 25px rgba(0,0,0,0.05);
 }
 
-
 .top-row {
   display: flex;
   justify-content: space-between;
@@ -14,7 +13,6 @@
   margin-bottom: 15px;
 }
 
-/* Clean button */
 .back-btn {
   background: #16a34a;
   color: white;
@@ -27,14 +25,11 @@
   margin-bottom: 12px;
 }
 
-
-
 .back-btn:hover {
   background: #15803d;
 }
 
 /* ================= TOP SECTION ================= */
-
 .patient-basic {
   display: flex;
   justify-content: space-between;
@@ -55,7 +50,6 @@
   color: #29c07b;
 }
 
-/* STATUS BADGE */
 .status-badge {
   background: #dcfce7;
   color: #16a34a;
@@ -65,35 +59,39 @@
   font-weight: 600;
 }
 
-.highlighted-p{
-    margin-top: 10px;
-    font-weight: 600;
-    color: #29c07b;
+.highlighted-p {
+  margin-top: 10px;
+  font-weight: 600;
+  color: #29c07b;
 }
+
 .highlighted-p .pre {
   color: #29c07b;
 }
-.probpre{
-    display: flex;
-    flex-direction: row;
+
+.probpre {
+  display: flex;
+  flex-direction: row;
 }
 
-.pre{
-    color: #636363;
-    font-weight: bold;
+.pre {
+  color: #636363;
+  font-weight: bold;
 }
 
-.reco{
-    display: flex;
-    flex-direction: column;
+.reco {
+  display: flex;
+  flex-direction: column;
 }
-.reco1{
-    margin-bottom: 12px;
+
+.reco1 {
+  margin-bottom: 12px;
 }
-.reco2{
-    color: #636363;
-    font-weight: 550;
-    font-size: 15.65px;
+
+.reco2 {
+  color: #636363;
+  font-weight: 550;
+  font-size: 15.65px;
 }
 
 .report-image {
@@ -109,9 +107,7 @@
   object-fit: cover;
 }
 
-
 /* ================= INFO GRID ================= */
-
 .info-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -137,11 +133,11 @@
 }
 
 .patient-details-page {
-  padding: 30px 40px;   /* same as dashboard main */
+  padding: 30px 40px;
 }
 
 .patient-details-container {
-  position: relative;   /* IMPORTANT */
+  position: relative;
   background: #ffffff;
   padding: 25px;
   border-radius: 16px;
@@ -149,7 +145,6 @@
 }
 
 /* ================= ACTION ================= */
-
 .action-bar {
   margin: 20px 0;
   text-align: right;
@@ -171,7 +166,6 @@
 }
 
 /* ================= SECTION TITLE ================= */
-
 .section-title {
   text-align: center;
   font-size: 22px;
@@ -191,24 +185,16 @@
   background: #16a34a;
 }
 
-.section-title::before {
-  left: 0;
-}
+.section-title::before { left: 0; }
+.section-title::after { right: 0; }
 
-.section-title::after {
-  right: 0;
-}
-
-
-/* ================= REPORT LIST ================= */
-
+/* ================= REPORT ROW ================= */
 .report-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-/* REPORT ROW (same feel as patient-row) */
 .report-row {
   display: grid;
   grid-template-columns: 1fr 140px;
@@ -228,37 +214,22 @@
   transform: translateY(-2px);
 }
 
-/* LEFT INDEX */
-.report-index {
-  font-weight: 600;
-  color: #374151;
-  border-right: 2px solid #e5e7eb;
+/* ================= SUMMARY ROW ================= */
+.report-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 8px;
+  grid-column: 1 / -1;
+}
+
+.report-toggle {
+  font-size: 12px;
+  color: #16a34a;
   padding-right: 10px;
 }
 
-/* MIDDLE */
-.report-main {
-  padding-left: 15px;
-}
-
-.report-main strong {
-  color: #111827;
-}
-
-.report-date {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-/* RIGHT */
-.report-confidence {
-  text-align: right;
-  color: #16a34a;
-  font-weight: 500;
-}
-
 /* ================= EXPANDED ================= */
-
 .report-details {
   grid-column: 1 / -1;
   margin-top: 10px;
@@ -268,7 +239,6 @@
   border: 1px solid #e5e7eb;
 }
 
-/* recommendation */
 .medical-note {
   margin-top: 12px;
   background: #ecfdf5;
@@ -278,21 +248,18 @@
   font-size: 14px;
 }
 
-/* risk */
 .risk-text {
   margin-top: 10px;
   font-weight: 500;
 }
 
 /* ================= EMPTY ================= */
-
 .empty-text {
   color: #888;
   font-style: italic;
 }
 
-/* ================= BUTTON ================= */
-
+/* ================= SHOW MORE BUTTON ================= */
 .show-more-btn {
   margin-top: 12px;
   padding: 8px 14px;
@@ -305,13 +272,11 @@
   width: fit-content;
 }
 
-
 .show-more-btn:hover {
   background: #15803d;
 }
 
 /* ================= ANIMATION ================= */
-
 .report-row,
 .patient-basic {
   animation: fadeIn 0.3s ease-in-out;

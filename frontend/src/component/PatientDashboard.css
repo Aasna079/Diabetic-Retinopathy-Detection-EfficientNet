@@ -245,6 +245,19 @@ td {
   cursor: pointer;
 }
 
+.report-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 8px;
+}
+
+.report-toggle {
+  font-size: 12px;
+  color: #16a34a;
+  padding-right: 10px;
+}
+
 /* ================= REPORT (SAME AS DOCTOR) ================= */
 .patient-report {
   background: #f9fbfc;
@@ -257,6 +270,13 @@ td {
 .patient-report h3 {
   margin-top: 0;
   margin-bottom: 18px;
+}
+
+/* .value .pre{
+  color: #16a34a;
+} */
+.highlighted-p .value {
+  color: #29c07b;
 }
 
 /* FORM LAYOUT */

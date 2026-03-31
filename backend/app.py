@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import numpy as np
 from PIL import Image
 import io
+import jwt
 import uuid
 import torch
 import random
@@ -345,6 +346,37 @@ def get_patients():
     for p in patients:
         p["_id"] = str(p["_id"])
     return jsonify(patients)
+
+
+@app.route("/api/patient_from_token")
+def patient_from_token():
+    token = request.cookies.get("token")  # read from cookie, not header
+    
+    if not token:
+        return jsonify({"error": "No token provided"}), 401
+
+    try:
+        decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user = db.users.find_one({"uuid": decoded["uuid"]})
+        
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        return jsonify({
+            "uuid": user.get("uuid"),
+            "name": user.get("name"),
+            "email": user.get("email"),
+            "phone": user.get("phone"),
+            "age": user.get("age"),
+            "gender": user.get("gender"),
+            "bloodGroup": user.get("bloodGroup"),
+            "address": user.get("address")
+        })
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Token expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 401
+
 
 # ========== Chatbot Route ==========
 @app.route("/chat", methods=["POST"])

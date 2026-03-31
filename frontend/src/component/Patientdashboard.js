@@ -10,66 +10,63 @@ export default function PatientDashboard() {
   const [activePage, setActivePage] = useState("profile");
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
+  const [showAllReports, setShowAllReports] = useState(false);
 
-  // Fetch patient from backend
+  const formatDateOnly = (timestamp) => {
+    if (!timestamp) return "N/A";
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      timeZone: "Asia/Kathmandu"
+    });
+  };
+
+  const fmt = (val) => {
+    if (val === undefined) return "N/A";
+    if (val === null) return "null";
+    if (val === "") return '""';
+    return String(val);
+  };
+
   useEffect(() => {
-    console.log("PatientDashboard mounted");
-
-    const initPatient = async () => {
-      let storedUser = localStorage.getItem("user");
-
-      if (storedUser) {
-        storedUser = JSON.parse(storedUser);
-        console.log("Using patient from localStorage:", storedUser);
-        setPatient(storedUser);
-      } else {
-        console.warn("No user in localStorage. Fetching default patient from backend...");
-        try {
-          // Replace doctor_id with actual value if needed
-          const res = await fetch("http://localhost:5000/api/patients?doctor_id=demo_doctor");
-          const data = await res.json();
-
-          if (data.length > 0) {
-            console.log("Fetched default patient:", data[0]);
-            setPatient(data[0]);
-            localStorage.setItem("user", JSON.stringify(data[0]));
-          } else {
-            console.error("No patient found in backend.");
-          }
-        } catch (err) {
-          console.error("Error fetching default patient:", err);
+    fetch("http://localhost:5000/api/patient_from_token", {
+      credentials: "include"
+    })
+      .then(res => {
+        if (res.status === 401) {
+          window.location.href = "/login";
+          return null;
         }
-      }
-
-      setLoading(false);
-    };
-
-    initPatient();
+        return res.json();
+      })
+      .then(data => {
+        if (!data) return;
+        setPatient(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
   }, []);
 
-  // Poll reports every 5 seconds
   useEffect(() => {
     if (!patient) return;
-    const interval = setInterval(() => {
-      loadReports(patient._id || patient.uuid);
-    }, 5000);
 
-    // Load immediately too
-    loadReports(patient._id || patient.uuid);
+    const fetchReports = () => {
+      fetch(`http://localhost:5000/api/patient_reports?patient_id=${patient.uuid}`)
+        .then(res => res.json())
+        .then(data => setReports(data))
+        .catch(err => console.error(err));
+    };
 
+    fetchReports();
+    const interval = setInterval(fetchReports, 5000);
     return () => clearInterval(interval);
   }, [patient]);
-
-  const loadReports = async (patientId) => {
-    if (!patientId) return;
-    try {
-      const res = await fetch("http://localhost:5000/api/patients?doctor_id=YOUR_DOCTOR_ID");
-      const data = await res.json();
-      setReports(data);
-    } catch (err) {
-      console.error("Reports fetch error:", err);
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -81,7 +78,6 @@ export default function PatientDashboard() {
 
   return (
     <div className="dashboard">
-      {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-title">
           <img src="/ICON NAME.png" alt="icon" className="sidebar-icon" />
@@ -111,53 +107,122 @@ export default function PatientDashboard() {
         </div>
       </aside>
 
-      {/* Main */}
       <main className="main">
         {activePage === "profile" && <PatientProfile patient={patient} />}
+
         {activePage === "report" && (
           <>
-            <div className="section-title">My Report</div>
+            <div className="section-title">My Reports</div>
             <div className="card">
               {reports.length === 0 ? (
-                <p>No reports yet.</p>
+                <p className="empty-text">No reports yet.</p>
               ) : (
-                reports.map((report) => (
-                  <div
-                    key={report.prediction_id || report._id}
-                    className="report-card"
-                    onClick={() =>
-                      setExpandedId(
-                        expandedId === (report.prediction_id || report._id)
-                          ? null
-                          : report.prediction_id || report._id
-                      )
-                    }
-                    style={{ cursor: "pointer" }}
-                  >
-                    <p><strong>Date:</strong> {new Date(report.timestamp).toLocaleString()}</p>
-                    <p><strong>Result:</strong> {report.class_name || report.severity}</p>
-                    {expandedId === (report.prediction_id || report._id) && (
-                      <div className="report-details">
-                        {report.image_id && (
-                          <img
-                            src={`http://localhost:5000/api/image/${report.image_id}`}
-                            alt="Report"
-                            className="report-img"
-                          />
-                        )}
-                        <p><strong>Date:</strong> {new Date(report.timestamp).toLocaleString()}</p>
-                        <p><strong>Result:</strong> {report.class_name || report.severity}</p>
-                        <p><strong>Confidence:</strong> {report.confidence}</p>
-                        <p><strong>Recommendation:</strong> {report.recommendation || report.recommendations?.join(", ")}</p>
-                        <hr />
+                <>
+                  {(showAllReports ? reports : reports.slice(0, 5)).map((report) => (
+                    <div
+                      key={report.prediction_id || report._id}
+                      className="report-row"
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        setExpandedId(
+                          expandedId === (report.prediction_id || report._id)
+                            ? null
+                            : report.prediction_id || report._id
+                        )
+                      }
+                    >
+                      {/* Summary */}
+                      <div className="report-summary">
+                        <span><p>{formatDateOnly(report.timestamp)}</p></span>
+                        <span className="report-toggle">
+                          {expandedId === (report.prediction_id || report._id) ? "▲" : "▼"}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                ))
+
+                      {/* Expanded details */}
+                      {expandedId === (report.prediction_id || report._id) && (
+                        <div className="report-details"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {report.image_id && (
+                            <div className="report-image">
+                              <img
+                                src={`http://localhost:5000/api/image/${report.image_id}`}
+                                alt="Report"
+                              />
+                            </div>
+                          )}
+                          <br />
+                          <p><strong>Date:</strong> {formatDateOnly(report.timestamp)}</p>
+                          <p><strong>Class_id:</strong> {fmt(report.class_id)}</p>
+                          <p><strong>Class_name:</strong> {fmt(report.class_name)}</p>
+                          <p><strong>Confidence:</strong> {fmt(report.confidence)}</p>
+                          <p><strong>Doctor_id:</strong> {fmt(report.doctor_id)}</p>
+                          <p><strong>Filename:</strong> {fmt(report.filename)}</p>
+
+                          <div>
+                            <hr />
+                            <strong>Model_metrics:</strong>
+                            {report.model_metrics && Object.keys(report.model_metrics).length > 0 ? (
+                              <div style={{ paddingLeft: "16px" }}>
+                                <p className="probpre"><div className="pre">F1_score:</div> {fmt(report.model_metrics.f1_score)}</p>
+                                <p className="probpre"><div className="pre">Precision:</div> {fmt(report.model_metrics.precision)}</p>
+                                <p className="probpre"><div className="pre">Recall:</div> {fmt(report.model_metrics.recall)}</p>
+                                <p className="probpre"><div className="pre">Support:</div> {fmt(report.model_metrics.support)}</p>
+                                {report.model_metrics.overall_accuracy !== undefined && (
+                                  <p><strong>overall_accuracy:</strong> {fmt(report.model_metrics.overall_accuracy)}</p>
+                                )}
+                              </div>
+                            ) : <span>{"{}"}</span>}
+                          </div>
+
+                          <hr />
+                          <p><strong>Patient_id:</strong> {fmt(report.patient_id)}</p>
+                          <p><strong>Prediction_id:</strong> {fmt(report.prediction_id)}</p>
+
+                          <div>
+                            <hr />
+                            <strong>Probabilities:</strong>
+                            {report.probabilities && Object.keys(report.probabilities).length > 0 ? (
+                              <div style={{ paddingLeft: "16px" }}>
+                                {(() => {
+                                  const sortedProbs = Object.entries(report.probabilities)
+                                    .sort((a, b) => a[1] - b[1]);
+                                  const maxKey = sortedProbs[sortedProbs.length - 1]?.[0];
+                                  return sortedProbs.map(([key, value]) => (
+                                    <p
+                                      key={key}
+                                      className={`probpre ${key === maxKey ? "highlighted-p" : ""}`}
+                                    >
+                                      <div className="pre">{key}:</div> <div className="value">{value}</div>
+                                    </p>
+                                  ));
+                                })()}
+                              </div>
+                            ) : <span>N/A</span>}
+                          </div>
+
+                          <hr />
+                          <p className="reco">
+                            <strong className="reco1">Recommendation:</strong>
+                            <div className="reco2">{fmt(report.recommendation)}</div>
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {reports.length > 5 && (
+                    <button className="show-more-btn" onClick={() => setShowAllReports(!showAllReports)}>
+                      {showAllReports ? "Show Less ▲" : "Show More ▼"}
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </>
         )}
+
         {activePage === "map" && <Map />}
         <Chatbot />
       </main>

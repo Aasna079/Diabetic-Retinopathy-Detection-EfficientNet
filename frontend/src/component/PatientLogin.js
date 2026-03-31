@@ -22,14 +22,18 @@ export default function PatientLogin() {
           password: password,
         }),
       });
-
       const data = await response.json();
 
       if (response.ok) {
-        if (!data.user || !data.user.role) {
+        const patientObject = data.user;  // only user info is returned
+
+        if (!patientObject) {
           alert("Invalid server response");
           return;
         }
+
+        localStorage.setItem("user", JSON.stringify(patientObject));
+
         navigate("/PatientDashboard");
       } else {
         if (response.status === 404) {
