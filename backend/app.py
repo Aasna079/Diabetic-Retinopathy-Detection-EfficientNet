@@ -10,6 +10,111 @@ import numpy as np
 from PIL import Image
 import io
 import jwt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import uuid
 import torch
 import random
@@ -41,7 +146,7 @@ MONGODB_URI = os.getenv(
     "MONGODB_URI"
 )
 DATABASE_NAME = os.getenv("DATABASE_NAME", "dr_detection_db")
-SECRET_KEY = os.getenv("SECRET_KEY", "my-super-secret-key-for-dr-detection-2024")
+SECRET_KEY = os.getenv("SECRET_KEY")
 UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "static/uploads")
 
 print(f"📁 Upload folder: {UPLOAD_FOLDER}")
